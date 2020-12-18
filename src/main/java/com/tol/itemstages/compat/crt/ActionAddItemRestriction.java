@@ -1,55 +1,37 @@
 package com.tol.itemstages.compat.crt;
 
-import com.blamejared.crafttweaker.api.actions.IAction;
-import com.blamejared.crafttweaker.api.item.IIngredient;
-import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
+import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
+import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.tol.itemstages.stages.StageUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 
-public class ActionAddItemRestriction implements IAction {
+public class ActionAddItemRestriction implements IRuntimeAction {
 
-	private final String stage;
-	private final IIngredient ingredient;
+    private final String stage;
+    private final ItemStack itemStack;
 
-	public ActionAddItemRestriction(String stage, IIngredient ingredient) {
-		this.stage = stage;
-		this.ingredient = ingredient;
-	}
+    public ActionAddItemRestriction(String stage, IItemStack itemStack) {
+        this.stage = stage;
+        this.itemStack = itemStack.getInternal();
+    }
 
-	public ActionAddItemRestriction(String stage, Item item) {
-		this.stage = stage;
-		this.ingredient = IIngredient.fromIngredient(Ingredient.fromItems(item));
-	}
+    public ActionAddItemRestriction(String stage, Item item) {
+        this.stage = stage;
+        this.itemStack = item.getDefaultInstance();
+    }
 
-	@Override
-	public void apply() {
-		if (this.stage.isEmpty()) {
-			throw new IllegalArgumentException("Empty stage name for this entry");
-		}
+    @Override
+    public void apply() {
+        if (this.stage.isEmpty()) {
+            throw new IllegalArgumentException("Empty stage name for this entry");
+        }
 
-		ItemStack[] itemStacks;
+        StageUtils.INSTANCE.updateStages(stage, itemStack);
+    }
 
-		itemStacks = CraftTweakerHelper.getItemStacks(ingredient.getItems());
-
-		if (itemStacks.length == 0) {
-			throw new IllegalArgumentException("No items or blocks found for this entry");
-		}
-
-		for (final ItemStack stack : itemStacks) {
-			if (stack.isEmpty()) {
-				throw new IllegalArgumentException("Entry contains an empty/air stack");
-			}
-
-			StageUtils.ITEM_STAGES.put(stack, this.stage);
-		}
-
-
-	}
-
-	@Override
-	public String describe() {
-		return "Describe string";
-	}
+    @Override
+    public String describe() {
+        return "Describe string";
+    }
 }

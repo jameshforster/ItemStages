@@ -1,40 +1,24 @@
 package com.tol.itemstages.compat.crt;
 
-import com.blamejared.crafttweaker.api.actions.IAction;
-import com.blamejared.crafttweaker.api.item.IIngredient;
-import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
-import com.tol.itemstages.stages.StageUtils;
+import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
+import com.blamejared.crafttweaker.api.item.IItemStack;
 import net.minecraft.item.ItemStack;
 
-public class ActionRemoveItemRestriction implements IAction {
+public class ActionRemoveItemRestriction implements IRuntimeAction {
 
-	private final IIngredient ingredient;
+    private final ItemStack itemStack;
 
-	public ActionRemoveItemRestriction(IIngredient ingredient) {
-		this.ingredient = ingredient;
-	}
+    public ActionRemoveItemRestriction(IItemStack itemStack) {
+        this.itemStack = itemStack.getInternal();
+    }
 
-	@Override
-	public void apply() {
-		ItemStack[] itemStacks;
+    @Override
+    public void apply() {
 
-		itemStacks = CraftTweakerHelper.getItemStacks(ingredient.getItems());
+    }
 
-		if (itemStacks.length == 0) {
-			throw new IllegalArgumentException("No items or blocks found for this entry");
-		}
-
-		for (final ItemStack stack : itemStacks) {
-			if (stack.isEmpty()) {
-				throw new IllegalArgumentException("Entry contains an empty/air stack");
-			}
-
-			StageUtils.ITEM_STAGES.remove(stack);
-		}
-	}
-
-	@Override
-	public String describe() {
-		return null;
-	}
+    @Override
+    public String describe() {
+        return null;
+    }
 }

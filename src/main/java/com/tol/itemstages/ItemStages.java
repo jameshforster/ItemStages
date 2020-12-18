@@ -1,5 +1,8 @@
 package com.tol.itemstages;
 
+import com.tol.itemstages.events.ClientEvents;
+import com.tol.itemstages.events.LoaderEvents;
+import com.tol.itemstages.events.PlayerEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +40,9 @@ public class ItemStages
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ClientEvents());
+        MinecraftForge.EVENT_BUS.register(new LoaderEvents());
+        MinecraftForge.EVENT_BUS.register(new PlayerEvents());
     }
 
     private void setup(final FMLCommonSetupEvent event)

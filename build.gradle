@@ -131,7 +131,7 @@ dependencies {
 	compile fg.deobf('net.darkhax.bookshelf:Bookshelf-1.16.4:9.3.18')
 	compile fg.deobf('net.darkhax.gamestages:GameStages-1.16.4:6.0.1')
 	compile fg.deobf('mezz.jei:jei-1.16.4:7.6.0.62')
-	compile fg.deobf('com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.0.0.63')
+	compile fg.deobf('com.blamejared.crafttweaker:CraftTweaker-1.16.2:7.0.0.27')
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

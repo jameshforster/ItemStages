@@ -1,81 +1,76 @@
 package com.tol.itemstages.stages;
 
-import com.google.common.collect.*;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fluids.FluidStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class StageUtils {
 
-	public static final HashMap<ItemStack, String> ITEM_STAGES = new HashMap<>();
-	public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
-	public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
+    public final static StageUtils INSTANCE = new StageUtils();
 
-	public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
-	public static final Map<EnchantmentData, String> ENCHANT_STAGES = new HashMap<>();
-	public static final HashMap<ItemStack, String> CUSTOM_NAMES = new HashMap<>();
-	public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
-	public static final ListMultimap<String, ResourceLocation> recipeCategoryStages = ArrayListMultimap.create();
+    public HashMap<ItemStack, List<String>> ITEM_STAGES = new HashMap<>();
+    public HashMap<ItemStack, String> ITEM_HIDDEN_NAMES = new HashMap<>();
 
-	public static String getStage (ItemStack stack) {
+    public boolean hasAllStages(PlayerEntity player, ItemStack itemStack) {
+		boolean passesValidation = true;
 
-		if (!stack.isEmpty()) {
-
-			for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
-
-				if (StageCompare.INSTANCE.isValid(stack, entry.getA())) {
-
-					return entry.getB();
-				}
+		for (String stage: getStages(findMatchingItemStack(itemStack))) {
+			if(!GameStageHelper.hasStage(player, stage)) {
+				passesValidation = false;
 			}
 		}
 
+		return passesValidation;
+	}
+
+	public List<String> getStages(ItemStack itemStack) {
+		return ITEM_STAGES.getOrDefault(itemStack, new ArrayList<>());
+	}
+
+	public ItemStack getStagedItem(ItemStack itemStack) {
+    	if(hasStagedItem(itemStack)) {
+			return findMatchingItemStack(itemStack);
+		}
 		return null;
 	}
 
-	public static String getEnchantStage (ItemStack stack) {
+	public boolean hasStagedItem(ItemStack itemStack) {
+		ItemStack key = findMatchingItemStack(itemStack);
+		return ITEM_STAGES.containsKey(key);
+	}
 
-		if (!stack.isEmpty()) {
+	private ItemStack findMatchingItemStack(ItemStack itemStack) {
+		ItemStack key = itemStack;
 
-			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
-
-			for (final Map.Entry<Enchantment, Integer> enchant : map.entrySet()) {
-
-				for (final Map.Entry<EnchantmentData, String> enchantStage : ENCHANT_STAGES.entrySet()) {
-
-					if (enchantStage.getKey().enchantment == enchant.getKey() && enchantStage.getKey().enchantmentLevel == enchant.getValue()) {
-
-						return enchantStage.getValue();
-					}
-				}
+		for (ItemStack storedItemStack : ITEM_STAGES.keySet()) {
+			if (storedItemStack.isItemEqual(itemStack)) {
+				key = storedItemStack;
 			}
 		}
 
-		return null;
+		return key;
 	}
 
-	public static String getUnfamiliarName (ItemStack stack) {
-
-		return CUSTOM_NAMES.getOrDefault(stack, "Unfamiliar Item");
+	public void updateStages(String stage, ItemStack itemStack) {
+    	ItemStack key = findMatchingItemStack(itemStack);
+    	List<String> stages = getStages(key);
+    	if(!stages.contains(stage)) {
+			stages.add(stage);
+    		ITEM_STAGES.put(key, stages);
+		}
 	}
 
-	public static void sendDropMessage (PlayerEntity player, ItemStack stack) {
-
-		player.sendStatusMessage(new StringTextComponent(getUnfamiliarName(stack)), false);
+	public String getHiddenName(ItemStack itemStack) {
+		ItemStack key = findMatchingItemStack(itemStack);
+		return ITEM_HIDDEN_NAMES.getOrDefault(key, "Unknown item");
 	}
 
-	public static void sendAttackFailMessage (PlayerEntity player, ItemStack stack) {
-
-		player.sendStatusMessage(stack.getDisplayName(), false);
+	public void updateHiddenName(String name, ItemStack itemStack) {
+		ItemStack key = findMatchingItemStack(itemStack);
+		ITEM_HIDDEN_NAMES.put(key, name);
 	}
 }

@@ -4,7 +4,7 @@ public class ConfigurationHandler {
 
 //	public static Configuration config;
 
-	public static boolean allowHoldingRestricted = false;
+	public static boolean allowHoldingRestricted = true;
 
 	public static boolean allowHoldingRestrictedEnchant = false;
 
