@@ -1,6 +1,6 @@
 package com.tol.itemstages.events;
 
-import com.tol.itemstages.stages.StageUtils;
+import com.tol.itemstages.stages.ItemStageUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -37,9 +37,13 @@ public class PlayerEvents {
 
             final ItemStack heldItem = player.getHeldItem(Hand.MAIN_HAND);
 
-            if(!StageUtils.INSTANCE.hasAllStages(player, heldItem)) {
-                heldItem.setDisplayName(new StringTextComponent(StageUtils.INSTANCE.getHiddenName(heldItem)));
-            }
+            if(ItemStageUtils.INSTANCE.hasStagedItem(heldItem)) {
+				if (!ItemStageUtils.INSTANCE.hasAllStages(player, heldItem)) {
+					heldItem.setDisplayName(new StringTextComponent(ItemStageUtils.INSTANCE.getHiddenName(heldItem)));
+				} else {
+					heldItem.removeChildTag("display");
+				}
+			}
         }
     }
 }

@@ -2,7 +2,7 @@ package com.tol.itemstages.compat.crt;
 
 import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.tol.itemstages.stages.StageUtils;
+import com.tol.itemstages.stages.ItemStageUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -27,7 +27,7 @@ public class ActionAddItemRestriction implements IRuntimeAction {
             throw new IllegalArgumentException("Empty stage name for this entry");
         }
 
-        StageUtils.INSTANCE.updateStages(stage, itemStack);
+        ItemStageUtils.INSTANCE.updateStages(stage, itemStack);
     }
 
     @Override

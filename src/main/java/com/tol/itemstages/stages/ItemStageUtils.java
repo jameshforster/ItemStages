@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class StageUtils {
+public class ItemStageUtils {
 
-    public final static StageUtils INSTANCE = new StageUtils();
+    public final static ItemStageUtils INSTANCE = new ItemStageUtils();
 
     public HashMap<ItemStack, List<String>> ITEM_STAGES = new HashMap<>();
     public HashMap<ItemStack, String> ITEM_HIDDEN_NAMES = new HashMap<>();
