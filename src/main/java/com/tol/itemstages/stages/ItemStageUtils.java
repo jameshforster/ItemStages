@@ -43,7 +43,7 @@ public class ItemStageUtils {
 		return ITEM_STAGES.containsKey(key);
 	}
 
-	private ItemStack findMatchingItemStack(ItemStack itemStack) {
+	public ItemStack findMatchingItemStack(ItemStack itemStack) {
 		ItemStack key = itemStack;
 
 		for (ItemStack storedItemStack : ITEM_STAGES.keySet()) {

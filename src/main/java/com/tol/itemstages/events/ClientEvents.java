@@ -32,18 +32,19 @@ public class ClientEvents {
     @SubscribeEvent
     public void onClientSync(StagesSyncedEvent event) {
         jeiConditional(event.getPlayer());
+
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onClientLoadComplete(FMLLoadCompleteEvent event) {
         jeiConditional(PlayerUtils.getClientPlayer());
-		RecipeStageUtils.INSTANCE.removeRecipesByOutput();
     }
 
     private void jeiConditional(PlayerEntity player) {
         if (ModList.get().getModContainerById("jei").isPresent()) {
             PluginItemStages.syncHiddenItems(player);
+            RecipeStageUtils.INSTANCE.syncHiddenRecipes(player);
         }
     }
 }
