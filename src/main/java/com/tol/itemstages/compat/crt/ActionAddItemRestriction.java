@@ -1,10 +1,16 @@
 package com.tol.itemstages.compat.crt;
 
+import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
+import com.blamejared.crafttweaker.impl.managers.CTCraftingTableManager;
 import com.tol.itemstages.stages.ItemStageUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActionAddItemRestriction implements IRuntimeAction {
 
@@ -26,8 +32,11 @@ public class ActionAddItemRestriction implements IRuntimeAction {
         if (this.stage.isEmpty()) {
             throw new IllegalArgumentException("Empty stage name for this entry");
         }
-
+        List<ItemStack> itemStackList = new ArrayList<>();
+        itemStackList.add(itemStack);
+        IItemStack iItemStack = CraftTweakerHelper.getIItemStacks(itemStackList).get(0);
         ItemStageUtils.INSTANCE.updateStages(stage, itemStack);
+        CraftTweakerAPI.apply(new ActionAddRecipeRestriction(CTCraftingTableManager.INSTANCE, stage, iItemStack));
     }
 
     @Override

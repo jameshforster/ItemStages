@@ -1,8 +1,8 @@
 package com.tol.itemstages.stages;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.impl.actions.recipes.ActionRemoveRecipeByOutput;
 import com.blamejared.crafttweaker.impl.managers.CTCraftingTableManager;
-import com.tol.itemstages.compat.crt.ActionRemoveAndSaveRecipeFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
@@ -15,10 +15,6 @@ public class RecipeStageUtils {
 
 //	public HashMap<IRecipe, String> STAGED_RECIPES = new HashMap<>();
 
-	private void removeStagedRecipesByOutput(List<ItemStack> itemstacks, PlayerEntity playerEntity) {
-		CraftTweakerAPI.apply(new ActionRemoveAndSaveRecipeFactory(CTCraftingTableManager.INSTANCE).generateActionFromOutputs(itemstacks, playerEntity));
-	}
-
 	public void syncHiddenRecipes(PlayerEntity playerEntity) {
 		List<ItemStack> removedItems = new ArrayList<>();
 		for(ItemStack stagedItem :ItemStageUtils.INSTANCE.ITEM_STAGES.keySet()) {
@@ -28,6 +24,6 @@ public class RecipeStageUtils {
 			}
 		}
 
-		removeStagedRecipesByOutput(removedItems, playerEntity);
+//		removeStagedRecipesByOutput(removedItems, playerEntity);
 	}
 }
