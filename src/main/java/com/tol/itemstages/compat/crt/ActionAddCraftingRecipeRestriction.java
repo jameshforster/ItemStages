@@ -78,7 +78,7 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
                     IRecipe<CraftingInventory> baseRecipe = ((StagedCraftingRecipe) recipe).recipe;
                     newRecipe = new StagedCraftingRecipe(stages, baseRecipe);
                 } else {
-                    newRecipe = new StagedCraftingRecipe(stages, (IRecipe<CraftingInventory>) recipe);
+                    newRecipe = new StagedCraftingRecipe(stages, (ICraftingRecipe) recipe);
                 }
 
                 RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, newRecipe);
