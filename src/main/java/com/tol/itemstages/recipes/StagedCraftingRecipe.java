@@ -30,17 +30,11 @@ public class StagedCraftingRecipe implements ICraftingRecipe {
         if (Minecraft.getInstance().world != null && Minecraft.getInstance().world.isRemote) {
             boolean hasAllStages = true;
             PlayerEntity player = Minecraft.getInstance().player;
-            player.sendStatusMessage(new StringTextComponent("CHECKING RECIPE STAGE"), false);
-            player.sendStatusMessage(new StringTextComponent("ALL STAGES: " + stages), false);
-            player.sendStatusMessage(new StringTextComponent("FOR PLAYER: " + Minecraft.getInstance().player), false);
-            player.sendStatusMessage(new StringTextComponent("EFFECTIVE SIDE: " + EffectiveSide.get().isClient()), false);
             for (String stage : stages) {
-                player.sendStatusMessage(new StringTextComponent("CHECKING FOR STAGE: " + stage), false);
                 if (!GameStageSaveHandler.getPlayerData(player.getUniqueID()).hasStage(stage)) {
                     hasAllStages = false;
                 }
             }
-            player.sendStatusMessage(new StringTextComponent("FINAL RESULT: " + hasAllStages), false);
             return hasAllStages;
         } else return true;
     }

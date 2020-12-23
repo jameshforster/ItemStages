@@ -36,7 +36,7 @@ public class ActionAddItemRestriction implements IRuntimeAction {
         itemStackList.add(itemStack);
         IItemStack iItemStack = CraftTweakerHelper.getIItemStacks(itemStackList).get(0);
         ItemStageUtils.INSTANCE.updateStages(stage, itemStack);
-        CraftTweakerAPI.apply(new ActionAddRecipeRestriction(CTCraftingTableManager.INSTANCE, stage, iItemStack));
+        CraftTweakerAPI.apply(new ActionAddCraftingRecipeRestriction(CTCraftingTableManager.INSTANCE, stage, iItemStack, true));
     }
 
     @Override
