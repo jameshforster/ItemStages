@@ -6,10 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.*;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -74,5 +72,10 @@ public class StagedCraftingRecipe implements ICraftingRecipe {
     @Override
     public IRecipeType<?> getType() {
         return recipe.getType();
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return recipe.getIngredients();
     }
 }

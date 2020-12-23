@@ -5,6 +5,7 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionRecipeBase;
 import com.blamejared.crafttweaker.impl.recipes.wrappers.WrapperRecipe;
 import com.tol.itemstages.recipes.StagedCraftingRecipe;
+import com.tol.itemstages.stages.RecipeStageUtils;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
@@ -28,7 +29,8 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
         super(manager);
         this.stage = stage;
         for (WrapperRecipe recipe : getManager().getRecipesByOutput(itemStack)) {
-            this.recipeNames.add(recipe.getRecipe().getId().getPath());
+            ResourceLocation rl = recipe.getRecipe().getId();
+            this.recipeNames.add(rl.getNamespace() + ":" +  rl.getPath());
         }
         if (includeIngredients) {
 			for (IRecipe<?> recipe : getManager().getRecipes().values()) {
@@ -44,7 +46,8 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
 				}
 
 				if (containsStagedItemIngredient) {
-					this.recipeNames.add(recipe.getId().getPath());
+                    ResourceLocation rl = recipe.getId();
+					this.recipeNames.add(rl.getNamespace() + ":" +  rl.getPath());
 				}
 			}
 		}
@@ -58,7 +61,6 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
 
     @Override
     public void apply() {
-		LOGGER.info("[STAGEDMOD] Staging the following recipes: " + recipeNames);
         for (String name : recipeNames) {
             List<String> stages = new ArrayList<>();
 			IRecipe<?> recipe = getManager().getRecipes().get(new ResourceLocation(name));
@@ -69,18 +71,19 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
                 if (!stages.contains(stage)) {
                     stages.add(stage);
                 }
+                RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.put(name, stages);
                 getManager().removeByName(name);
+                StagedCraftingRecipe newRecipe;
                 if (recipe instanceof StagedCraftingRecipe) {
                     IRecipe<CraftingInventory> baseRecipe = ((StagedCraftingRecipe) recipe).recipe;
-                    getManager().getRecipes().put(recipe.getId(), new StagedCraftingRecipe(stages, baseRecipe));
+                    newRecipe = new StagedCraftingRecipe(stages, baseRecipe);
                 } else {
-                    StagedCraftingRecipe temp = new StagedCraftingRecipe(stages, (IRecipe<CraftingInventory>) recipe);
-                    getManager().getRecipes().put(recipe.getId(), temp);
+                    newRecipe = new StagedCraftingRecipe(stages, (IRecipe<CraftingInventory>) recipe);
                 }
+
+                RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, newRecipe);
+                getManager().getRecipes().put(recipe.getId(), newRecipe);
             }
-            if (recipe == null) {
-            	LOGGER.info("[STAGEDMOD] Recipe not found, could not stage: " + name);
-			}
         }
     }
 

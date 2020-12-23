@@ -43,6 +43,7 @@ public class ClientEvents {
     private void jeiConditional(PlayerEntity player) {
         if (ModList.get().getModContainerById("jei").isPresent()) {
             PluginItemStages.syncHiddenItems(player);
+            PluginItemStages.syncHiddenRecipes(player);
         }
     }
 }
