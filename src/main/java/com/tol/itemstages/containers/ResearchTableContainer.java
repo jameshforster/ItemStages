@@ -18,7 +18,7 @@ public class ResearchTableContainer extends Container {
 	}
 
 	public ResearchTableContainer(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-		super(ContainerTypeHandler.RESEARCH_TABLE, id);
+		super(ContainerRegistry.RESEARCH_TABLE, id);
 		this.worldPosCallable = worldPosCallable;
 		this.addSlot(new Slot(this.tableInventory, 0, 15, 47) {
 			public int getSlotStackLimit() {

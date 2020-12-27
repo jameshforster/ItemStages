@@ -1,10 +1,13 @@
 package com.tol.itemstages;
 
+import com.tol.itemstages.blocks.BasicResearchTable;
 import com.tol.itemstages.events.ClientEvents;
 import com.tol.itemstages.events.LoaderEvents;
 import com.tol.itemstages.events.PlayerEvents;
+import com.tol.itemstages.registries.BlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemGroup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -85,7 +88,8 @@ public class ItemStages
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
             // register a new block here
-            LOGGER.info("HELLO from Register Block");
+
+            BlockRegistry.BASIC_RESEARCH_TABLE = BlockRegistry.registerItemBlock("basic_research_table", ItemGroup.TOOLS, new BasicResearchTable());
         }
     }
 }
