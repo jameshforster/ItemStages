@@ -1,5 +1,6 @@
 package com.tol.itemstages.containers;
 
+import com.tol.itemstages.registries.ContainerRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -8,18 +9,16 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class ResearchTableContainer extends Container {
 	private final IInventory tableInventory = new Inventory(1);
-	private final IWorldPosCallable worldPosCallable;
+	private final World worldIn;
 
-	public ResearchTableContainer(int id, PlayerInventory playerInventory) {
-		this(id, playerInventory, IWorldPosCallable.DUMMY);
-	}
-
-	public ResearchTableContainer(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-		super(ContainerRegistry.RESEARCH_TABLE, id);
-		this.worldPosCallable = worldPosCallable;
+	public ResearchTableContainer(int windowId, World world, PlayerInventory playerInventory, PlayerEntity player) {
+		super(ContainerRegistry.RESEARCH_TABLE.get(), windowId);
+		this.worldIn = world;
 		this.addSlot(new Slot(this.tableInventory, 0, 15, 47) {
 			public int getSlotStackLimit() {
 				return 1;
@@ -39,6 +38,6 @@ public class ResearchTableContainer extends Container {
 
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.ENCHANTING_TABLE);
+		return true;
 	}
 }

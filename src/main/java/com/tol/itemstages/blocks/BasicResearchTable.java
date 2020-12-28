@@ -19,6 +19,7 @@ import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -41,8 +42,8 @@ public class BasicResearchTable extends Block {
     @Nullable
     public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
         if (state.getBlock() instanceof BasicResearchTable) {
-            ITextComponent itextcomponent = ((INameable)state).getDisplayName();
-            return new SimpleNamedContainerProvider((id, inventory, player) -> new ResearchTableContainer(id, inventory, IWorldPosCallable.of(worldIn, pos)), itextcomponent);
+            ITextComponent itextcomponent = new StringTextComponent("research_table");
+            return new SimpleNamedContainerProvider((id, inventory, player) -> new ResearchTableContainer(id, worldIn, inventory, player), itextcomponent);
         } else {
             return null;
         }
