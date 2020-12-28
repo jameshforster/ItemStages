@@ -6,8 +6,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.container.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,11 +16,12 @@ import net.minecraft.world.World;
 public class ResearchTableContainer extends Container {
 	private final IInventory tableInventory = new Inventory(1);
 	private final World worldIn;
+	private final StonecutterContainer example = null;
 
 	public ResearchTableContainer(int windowId, World world, PlayerInventory playerInventory, PlayerEntity player) {
 		super(ContainerRegistry.RESEARCH_TABLE.get(), windowId);
 		this.worldIn = world;
-		this.addSlot(new Slot(this.tableInventory, 0, 15, 47) {
+		this.addSlot(new Slot(this.tableInventory, 0, 20, 33) {
 			public int getSlotStackLimit() {
 				return 1;
 			}
@@ -39,5 +41,50 @@ public class ResearchTableContainer extends Container {
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
 		return true;
+	}
+
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
+		Slot slot = this.inventorySlots.get(index);
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+			if (index == 0) {
+				if (!this.mergeItemStack(itemstack1, 1, 37, true)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (index == 1) {
+				if (!this.mergeItemStack(itemstack1, 1, 37, true)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (itemstack1.getItem() == Items.LAPIS_LAZULI) {
+				if (!this.mergeItemStack(itemstack1, 1, 2, true)) {
+					return ItemStack.EMPTY;
+				}
+			} else {
+				if (this.inventorySlots.get(0).getHasStack() || !this.inventorySlots.get(0).isItemValid(itemstack1)) {
+					return ItemStack.EMPTY;
+				}
+
+				ItemStack itemstack2 = itemstack1.copy();
+				itemstack2.setCount(1);
+				itemstack1.shrink(1);
+				this.inventorySlots.get(0).putStack(itemstack2);
+			}
+
+			if (itemstack1.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
+			}
+
+			if (itemstack1.getCount() == itemstack.getCount()) {
+				return ItemStack.EMPTY;
+			}
+
+			slot.onTake(playerIn, itemstack1);
+		}
+
+		return itemstack;
 	}
 }

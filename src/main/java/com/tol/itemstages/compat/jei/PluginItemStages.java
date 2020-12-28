@@ -1,20 +1,18 @@
 package com.tol.itemstages.compat.jei;
 
 import com.tol.itemstages.ConfigurationHandler;
-import com.tol.itemstages.stages.ItemStageUtils;
-import com.tol.itemstages.stages.RecipeStageUtils;
+import com.tol.itemstages.utils.ItemStageUtils;
+import com.tol.itemstages.utils.RecipeStageUtils;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

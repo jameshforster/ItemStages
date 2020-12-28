@@ -2,10 +2,8 @@ package com.tol.itemstages.compat.crt;
 
 import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.tol.itemstages.stages.ItemStageUtils;
+import com.tol.itemstages.utils.ItemStageUtils;
 import net.minecraft.item.ItemStack;
-
-import java.util.List;
 
 public class ActionRemoveItemRestriction implements IRuntimeAction {
 

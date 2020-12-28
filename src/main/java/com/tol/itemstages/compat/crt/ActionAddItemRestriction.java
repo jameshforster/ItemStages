@@ -5,7 +5,7 @@ import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
 import com.blamejared.crafttweaker.impl.managers.CTCraftingTableManager;
-import com.tol.itemstages.stages.ItemStageUtils;
+import com.tol.itemstages.utils.ItemStageUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 

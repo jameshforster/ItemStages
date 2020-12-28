@@ -1,4 +1,4 @@
-package com.tol.itemstages.stages;
+package com.tol.itemstages.utils;
 
 import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.entity.player.PlayerEntity;

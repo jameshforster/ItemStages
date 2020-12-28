@@ -1,6 +1,6 @@
 package com.tol.itemstages.events;
 
-import com.tol.itemstages.stages.ItemStageUtils;
+import com.tol.itemstages.utils.ItemStageUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;

@@ -5,7 +5,7 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionRecipeBase;
 import com.blamejared.crafttweaker.impl.recipes.wrappers.WrapperRecipe;
 import com.tol.itemstages.recipes.StagedCraftingRecipe;
-import com.tol.itemstages.stages.RecipeStageUtils;
+import com.tol.itemstages.utils.RecipeStageUtils;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
