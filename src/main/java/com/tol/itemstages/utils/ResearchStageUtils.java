@@ -19,7 +19,7 @@ import java.util.Map;
 public class ResearchStageUtils {
     public static HashMap<String, ResearchStage> RESEARCH_STAGES = new HashMap<>();
 
-    public List<ResearchStage> getOrderedMatchingStages(ItemStack itemStack) {
+    public static List<ResearchStage> getOrderedMatchingStages(ItemStack itemStack) {
     	List<ResearchStage> validStages = new ArrayList<>();
     	for (ResearchStage researchStage : RESEARCH_STAGES.values()) {
     		if (researchStage.containsItem(itemStack)) {
@@ -63,5 +63,18 @@ public class ResearchStageUtils {
 			GameStageHelper.syncPlayer(player);
 			player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> cap.removeResearch(researchStage));
 		}
+	}
+
+	public static List<ResearchStage> getOrderedValidStages(ServerPlayerEntity player, ItemStack itemStack) {
+    	List<ResearchStage> orderedStages = ResearchStageUtils.getOrderedMatchingStages(itemStack);
+		List<ResearchStage> validStages = new ArrayList<>();
+
+		for (ResearchStage stage : orderedStages) {
+			if (!GameStageHelper.hasStage(player, stage.stageName)) {
+				validStages.add(stage);
+			}
+		}
+
+    	return validStages;
 	}
 }

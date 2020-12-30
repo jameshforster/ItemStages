@@ -1,6 +1,7 @@
 package com.tol.itemstages.blocks;
 
 import com.tol.itemstages.containers.ResearchTableContainer;
+import com.tol.itemstages.research.ResearchStage;
 import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +19,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class BasicResearchTable extends Block {
 
@@ -27,7 +29,11 @@ public class BasicResearchTable extends Block {
 
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 		if (player instanceof ServerPlayerEntity) {
-			ResearchStageUtils.doResearch((ServerPlayerEntity) player, ResearchStageUtils.RESEARCH_STAGES.get("iron"), player.getHeldItem(handIn));
+			ServerPlayerEntity serverPlayer = ((ServerPlayerEntity) player);
+			List<ResearchStage> validResearchStages = ResearchStageUtils.getOrderedValidStages(serverPlayer, player.getHeldItem(handIn));
+			if (!validResearchStages.isEmpty()) {
+				ResearchStageUtils.doResearch(serverPlayer, validResearchStages.get(0), player.getHeldItem(handIn));
+			}
 		}
 
     	if (worldIn.isRemote) {
