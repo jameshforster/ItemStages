@@ -83,6 +83,7 @@ public class ItemStages
     		event.getOriginal().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
     			event.getEntity().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(newCap -> {
 					newCap.setResearch(cap.research);
+					newCap.setResearchedItems(cap.researchedItems);
 				});
 			});
 		}
