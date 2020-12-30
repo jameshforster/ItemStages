@@ -3,6 +3,7 @@ package com.tol.itemstages.events;
 import com.tol.itemstages.compat.jei.PluginItemStages;
 import com.tol.itemstages.utils.ItemStageUtils;
 import net.darkhax.bookshelf.util.PlayerUtils;
+import net.darkhax.gamestages.event.GameStageEvent;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
@@ -31,13 +32,12 @@ public class ClientEvents {
     @SubscribeEvent
     public void onClientSync(StagesSyncedEvent event) {
         jeiConditional(event.getPlayer());
-
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onClientLoadComplete(FMLLoadCompleteEvent event) {
-        jeiConditional(PlayerUtils.getClientPlayer());
+    	jeiConditional(PlayerUtils.getClientPlayer());
     }
 
     private void jeiConditional(PlayerEntity player) {

@@ -1,6 +1,8 @@
 package com.tol.itemstages;
 
 import com.tol.itemstages.blocks.BasicResearchTable;
+import com.tol.itemstages.capabilities.ResearchCapability;
+import com.tol.itemstages.capabilities.ResearchCapabilityProvider;
 import com.tol.itemstages.events.ClientEvents;
 import com.tol.itemstages.events.LoaderEvents;
 import com.tol.itemstages.events.PlayerEvents;
@@ -11,9 +13,14 @@ import com.tol.itemstages.registries.Registration;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -62,4 +69,22 @@ public class ItemStages
                 map(m->m.getMessageSupplier().get()).
                 collect(Collectors.toList()));
     }
+
+	@SubscribeEvent
+    public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+    	if (event.getObject() instanceof PlayerEntity) {
+			event.addCapability(new ResourceLocation("research_stages", "research"), new ResearchCapabilityProvider());
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerDeath(PlayerEvent.Clone event) {
+    	if (event.isWasDeath()) {
+    		event.getOriginal().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
+    			event.getEntity().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(newCap -> {
+					newCap.setResearch(cap.research);
+				});
+			});
+		}
+	}
 }

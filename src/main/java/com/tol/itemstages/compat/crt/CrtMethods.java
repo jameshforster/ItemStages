@@ -4,13 +4,20 @@ import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
+import com.tol.itemstages.research.ResearchStage;
+import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.openzen.zencode.java.ZenCodeType;
 
+import java.util.Arrays;
+import java.util.List;
+
 @ZenRegister
-@ZenCodeType.Name("mods.ItemStages")
+@ZenCodeType.Name("mods.ResearchStages")
 public class CrtMethods {
 
 	@ZenCodeType.Method
@@ -30,5 +37,14 @@ public class CrtMethods {
 				CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, item));
 			}
 		}
+	}
+
+	@ZenCodeType.Method
+	public static void setupResearchStage(String stageName, int experienceCost, int researchProgress, IItemStack[] basicItems, IItemStack[] advancedItems) {
+		List<ItemStack> basicItemList = Arrays.asList(CraftTweakerHelper.getItemStacks(basicItems));
+		List<ItemStack> advancedItemList = Arrays.asList(CraftTweakerHelper.getItemStacks(advancedItems));
+		ResearchStage stage = new ResearchStage(stageName, experienceCost, researchProgress, basicItemList, advancedItemList);
+
+		ResearchStageUtils.RESEARCH_STAGES.put(stageName, stage);
 	}
 }

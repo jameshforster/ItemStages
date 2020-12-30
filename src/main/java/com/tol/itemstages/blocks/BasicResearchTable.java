@@ -1,10 +1,12 @@
 package com.tol.itemstages.blocks;
 
 import com.tol.itemstages.containers.ResearchTableContainer;
+import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.util.ActionResultType;
@@ -24,7 +26,11 @@ public class BasicResearchTable extends Block {
     }
 
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (worldIn.isRemote) {
+		if (player instanceof ServerPlayerEntity) {
+			ResearchStageUtils.doResearch((ServerPlayerEntity) player, ResearchStageUtils.RESEARCH_STAGES.get("iron"), player.getHeldItem(handIn));
+		}
+
+    	if (worldIn.isRemote) {
             return ActionResultType.SUCCESS;
         } else {
             player.openContainer(state.getContainer(worldIn, pos));
