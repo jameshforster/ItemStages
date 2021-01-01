@@ -17,7 +17,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import javax.annotation.Nonnull;
 
 public class ContainerRegistry {
-	public static DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, "research_stages");
+	public static DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, "researchstages");
 
 	public static RegistryObject<ContainerType<ResearchTableContainer>> RESEARCH_TABLE = CONTAINERS.register("research_table", () -> IForgeContainerType.create((windowId, inv, data) -> {
 		World world = inv.player.getEntityWorld();

@@ -1,18 +1,15 @@
 package com.tol.itemstages.blocks;
 
-import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.containers.ResearchTableContainer;
-import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
 import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -22,8 +19,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BasicResearchTable extends Block {
 
@@ -32,16 +27,8 @@ public class BasicResearchTable extends Block {
     }
 
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		if (player instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayer = ((ServerPlayerEntity) player);
-            PlayerResearch research = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
-			List<ResearchStage> validResearchStages = ResearchStageUtils.getOrderedValidStages(serverPlayer, player.getHeldItem(handIn), research);
-			if (!validResearchStages.isEmpty()) {
-				ResearchStageUtils.doResearch(serverPlayer, validResearchStages.get(0), player.getHeldItem(handIn));
-			}
-		}
-
-    	if (worldIn.isRemote) {
+        if (worldIn.isRemote) {
+            ResearchStageUtils.doResearch((ClientPlayerEntity) player, ResearchStageUtils.RESEARCH_STAGES.get("iron"), player.getHeldItem(handIn));
             return ActionResultType.SUCCESS;
         } else {
             player.openContainer(state.getContainer(worldIn, pos));

@@ -1,34 +1,30 @@
 package com.tol.itemstages;
 
-import com.tol.itemstages.blocks.BasicResearchTable;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.capabilities.ResearchCapabilityProvider;
 import com.tol.itemstages.events.ClientEvents;
 import com.tol.itemstages.events.LoaderEvents;
 import com.tol.itemstages.events.PlayerEvents;
 import com.tol.itemstages.gui.ResearchTableGui;
-import com.tol.itemstages.registries.BlockRegistry;
+import com.tol.itemstages.networking.NetworkingHandler;
 import com.tol.itemstages.registries.ContainerRegistry;
 import com.tol.itemstages.registries.Registration;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import com.tol.itemstages.research.PlayerResearch;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("research_stages")
+@Mod("researchstages")
 public class ItemStages
 {
     // Directly reference a log4j logger.
@@ -47,6 +43,7 @@ public class ItemStages
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ModSetup::init);
 
 		Registration.init();
 
@@ -73,7 +70,7 @@ public class ItemStages
 	@SubscribeEvent
     public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
     	if (event.getObject() instanceof PlayerEntity) {
-			event.addCapability(new ResourceLocation("research_stages", "research"), new ResearchCapabilityProvider());
+			event.addCapability(new ResourceLocation("researchstages", "research"), new ResearchCapabilityProvider());
 		}
 	}
 

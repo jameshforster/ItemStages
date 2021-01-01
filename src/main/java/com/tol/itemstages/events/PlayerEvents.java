@@ -1,10 +1,16 @@
 package com.tol.itemstages.events;
 
+import com.tol.itemstages.capabilities.ResearchCapability;
+import com.tol.itemstages.networking.NetworkingHandler;
+import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.utils.ItemStageUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -44,6 +50,14 @@ public class PlayerEvents {
 					heldItem.removeChildTag("display");
 				}
 			}
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getPlayer() instanceof ServerPlayerEntity) {
+            PlayerResearch research = event.getPlayer().getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
+            NetworkingHandler.sendResearchMessageToPlayer(research, (ServerPlayerEntity) event.getPlayer());
         }
     }
 }

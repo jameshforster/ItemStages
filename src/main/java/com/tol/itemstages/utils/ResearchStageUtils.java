@@ -1,12 +1,13 @@
 package com.tol.itemstages.utils;
 
 import com.tol.itemstages.capabilities.ResearchCapability;
+import com.tol.itemstages.networking.NetworkingHandler;
 import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.GameStageSaveHandler;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -29,13 +30,13 @@ public class ResearchStageUtils {
         return validStages;
     }
 
-    public static void doResearch(PlayerEntity player, ResearchStage researchStage, ItemStack itemStack) {
+    public static void doResearch(ClientPlayerEntity player, ResearchStage researchStage, ItemStack itemStack) {
         int experienceCost = researchStage.getRequiredExperienceCost(itemStack);
         BigDecimal progressValue = new BigDecimal(researchStage.returnResearchGained(itemStack));
 
         player.sendStatusMessage(new StringTextComponent("Adding " + progressValue + " progress towards " + researchStage.stageName + " research."), false);
         player.addExperienceLevel(-experienceCost);
-        PlayerUtils.getResearchCapability(player).ifPresent(cap -> {
+        player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
             player.sendStatusMessage(new StringTextComponent("FOUND CAPABILITY TO UPDATE"), false);
             for (Map.Entry<ResearchStage, BigDecimal> thing : cap.research.entrySet()) {
                 player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
@@ -48,16 +49,16 @@ public class ResearchStageUtils {
                 player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
                 player.sendStatusMessage(new StringTextComponent("Progress: " + thing.getValue()), false);
             }
-        });
-        boolean isComplete = PlayerUtils.getResearchCapability(player).map(cap -> cap.research.getOrDefault(researchStage, new BigDecimal(0)).compareTo(new BigDecimal(100)) > -1).orElseGet(() -> false);
 
-        if (isComplete) {
-        	ServerPlayerEntity serverPlayer = PlayerUtils.getServerPlayerFromPlayer(player);
-            player.sendStatusMessage(new StringTextComponent("COMPLETED PROGRESS FOR STAGE " + researchStage.stageName), false);
-            GameStageHelper.addStage(serverPlayer, researchStage.stageName);
-            GameStageHelper.syncPlayer(serverPlayer);
-			PlayerUtils.getResearchCapability(player).ifPresent(cap -> cap.removeResearch(researchStage));
-        }
+            boolean isComplete = cap.research.getOrDefault(researchStage, new BigDecimal(0)).compareTo(new BigDecimal(100)) > -1;
+            if (isComplete) {
+                player.sendStatusMessage(new StringTextComponent("COMPLETED PROGRESS FOR STAGE " + researchStage.stageName), false);
+                cap.removeResearch(researchStage);
+                NetworkingHandler.sendStageUpdateToServer(researchStage.stageName);
+            }
+
+            NetworkingHandler.sendResearchMessageToServer(cap);
+        });
     }
 
     public static List<ResearchStage> getOrderedValidStages(PlayerEntity player, ItemStack itemStack, PlayerResearch research) {

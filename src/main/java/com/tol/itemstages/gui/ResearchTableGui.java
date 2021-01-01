@@ -15,7 +15,7 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 	private StonecutterScreen example = null;
 	private EnchantmentScreen example2 = null;
 
-	private ResourceLocation GUI = new ResourceLocation("research_stages", "textures/gui/research_table_gui.png");
+	private ResourceLocation GUI = new ResourceLocation("researchstages", "textures/gui/research_table_gui.png");
 
 	public ResearchTableGui(ResearchTableContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
 		super(screenContainer, inv, titleIn);

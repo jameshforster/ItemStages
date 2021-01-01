@@ -8,6 +8,7 @@ import com.tol.itemstages.utils.ResearchStageUtils;
 import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -109,7 +110,7 @@ public class ResearchTableContainer extends Container {
 		return validResearch.size() > selection && validResearch.get(selection).getRequiredExperienceCost(this.getSlot(0).getStack()) <= player.experienceLevel;
 	}
 
-	public void doResearch(PlayerEntity player, int selection) {
+	public void doResearch(ClientPlayerEntity player, int selection) {
 		PlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch).get(selection);
 		ResearchStageUtils.doResearch(player, validResearch, this.getSlot(0).getStack());

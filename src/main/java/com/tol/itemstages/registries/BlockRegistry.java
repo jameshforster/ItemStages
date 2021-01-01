@@ -10,7 +10,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class BlockRegistry {
-	public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, "research_stages");
+	public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, "researchstages");
 
     public static final RegistryObject<BasicResearchTable> BASIC_RESEARCH_TABLE = BLOCKS.register("basic_research_table", BasicResearchTable::new);
     public static final RegistryObject<Item> BASIC_RESEARCH_TABLE_ITEM = ItemRegistry.ITEMS.register("basic_research_table", () -> new BlockItem(BASIC_RESEARCH_TABLE.get(), new Item.Properties().group(ItemGroup.TOOLS)));
