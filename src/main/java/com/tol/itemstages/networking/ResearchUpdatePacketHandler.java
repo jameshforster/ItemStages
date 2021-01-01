@@ -1,5 +1,6 @@
 package com.tol.itemstages.networking;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
@@ -14,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,9 +24,9 @@ import java.util.function.Supplier;
 
 public class ResearchUpdatePacketHandler {
 
-    private PlayerResearch playerResearch;
+    private IPlayerResearch playerResearch;
 
-    public ResearchUpdatePacketHandler(PlayerResearch playerResearch) {
+    public ResearchUpdatePacketHandler(IPlayerResearch playerResearch) {
         this.playerResearch = playerResearch;
     }
 
@@ -39,11 +41,11 @@ public class ResearchUpdatePacketHandler {
     private CompoundNBT toNbt() {
         CompoundNBT tag = new CompoundNBT();
 
-        for (Map.Entry<ResearchStage, BigDecimal> entry: this.playerResearch.research.entrySet()) {
+        for (Map.Entry<ResearchStage, BigDecimal> entry: this.playerResearch.getResearch().entrySet()) {
             tag.putLong("research_" + entry.getKey().stageName, entry.getValue().longValue());
         }
 
-        for (Map.Entry<ResearchStage, List<ItemStack>> entry : this.playerResearch.researchedItems.entrySet()) {
+        for (Map.Entry<ResearchStage, List<ItemStack>> entry : this.playerResearch.getResearchedItems().entrySet()) {
             ListNBT items = new ListNBT();
             for (ItemStack researchedItem : entry.getValue()) {
                 items.add(researchedItem.write(new CompoundNBT()));
@@ -55,19 +57,39 @@ public class ResearchUpdatePacketHandler {
 
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
+			LogManager.getLogger().info("[RESEARCHSTAGES] Logged message with research data.");
+			for (Map.Entry<ResearchStage, BigDecimal> entry: this.playerResearch.getResearch().entrySet()) {
+				LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
+			}
             NetworkDirection direction = ctx.get().getDirection();
             if (direction == NetworkDirection.PLAY_TO_CLIENT) {
-                ctx.get().getSender().sendStatusMessage(new StringTextComponent("CLIENT RECEIVED MESSAGE FOR RESEARCH UPDATE"), false);
+				LogManager.getLogger().info("[RESEARCHSTAGES] Logged message to client from server.");
                 Minecraft.getInstance().player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
-                    cap.research = this.playerResearch.research;
-                    cap.researchedItems = this.playerResearch.researchedItems;
+					LogManager.getLogger().info("[RESEARCHSTAGES] Updating client capability.");
+					for (Map.Entry<ResearchStage, BigDecimal> entry: cap.getResearch().entrySet()) {
+						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
+					}
+					cap.setResearch(this.playerResearch.getResearch());
+					cap.setResearchedItems(this.playerResearch.getResearchedItems());
+					LogManager.getLogger().info("[RESEARCHSTAGES] Updated client capability.");
+					for (Map.Entry<ResearchStage, BigDecimal> entry: cap.getResearch().entrySet()) {
+						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
+					}
                 });
             } else {
-                ctx.get().getSender().sendStatusMessage(new StringTextComponent("SERVER RECEIVED MESSAGE FOR RESEARCH UPDATE"), false);
+				LogManager.getLogger().info("[RESEARCHSTAGES] Logged message to server from client.");
                 ServerPlayerEntity sender = ctx.get().getSender();
                 sender.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent( cap -> {
-                    cap.research = this.playerResearch.research;
-                    cap.researchedItems = this.playerResearch.researchedItems;
+					LogManager.getLogger().info("[RESEARCHSTAGES] Updating server capability.");
+					for (Map.Entry<ResearchStage, BigDecimal> entry: cap.getResearch().entrySet()) {
+						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
+					}
+					cap.setResearch(this.playerResearch.getResearch());
+					cap.setResearchedItems(this.playerResearch.getResearchedItems());
+					LogManager.getLogger().info("[RESEARCHSTAGES] Updated server capability.");
+					for (Map.Entry<ResearchStage, BigDecimal> entry: cap.getResearch().entrySet()) {
+						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
+					}
                 });
             }
         });

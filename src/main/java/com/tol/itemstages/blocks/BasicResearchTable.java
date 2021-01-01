@@ -28,7 +28,6 @@ public class BasicResearchTable extends Block {
 
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (worldIn.isRemote) {
-            ResearchStageUtils.doResearch((ClientPlayerEntity) player, ResearchStageUtils.RESEARCH_STAGES.get("iron"), player.getHeldItem(handIn));
             return ActionResultType.SUCCESS;
         } else {
             player.openContainer(state.getContainer(worldIn, pos));

@@ -1,5 +1,6 @@
 package com.tol.itemstages.utils;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.networking.NetworkingHandler;
 import com.tol.itemstages.research.PlayerResearch;
@@ -38,19 +39,19 @@ public class ResearchStageUtils {
         player.addExperienceLevel(-experienceCost);
         player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
             player.sendStatusMessage(new StringTextComponent("FOUND CAPABILITY TO UPDATE"), false);
-            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.research.entrySet()) {
+            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.getResearch().entrySet()) {
                 player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
                 player.sendStatusMessage(new StringTextComponent("Progress: " + thing.getValue()), false);
             }
             cap.updateResearch(researchStage, progressValue);
             cap.updateResearchedItem(researchStage, itemStack);
             player.sendStatusMessage(new StringTextComponent("CAPABILITY UPDATED"), false);
-            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.research.entrySet()) {
+            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.getResearch().entrySet()) {
                 player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
                 player.sendStatusMessage(new StringTextComponent("Progress: " + thing.getValue()), false);
             }
 
-            boolean isComplete = cap.research.getOrDefault(researchStage, new BigDecimal(0)).compareTo(new BigDecimal(100)) > -1;
+            boolean isComplete = cap.getResearch().getOrDefault(researchStage, new BigDecimal(0)).compareTo(new BigDecimal(100)) > -1;
             if (isComplete) {
                 player.sendStatusMessage(new StringTextComponent("COMPLETED PROGRESS FOR STAGE " + researchStage.stageName), false);
                 cap.removeResearch(researchStage);
@@ -61,12 +62,12 @@ public class ResearchStageUtils {
         });
     }
 
-    public static List<ResearchStage> getOrderedValidStages(PlayerEntity player, ItemStack itemStack, PlayerResearch research) {
+    public static List<ResearchStage> getOrderedValidStages(PlayerEntity player, ItemStack itemStack, IPlayerResearch research) {
         List<ResearchStage> orderedStages = ResearchStageUtils.getOrderedMatchingStages(itemStack);
         List<ResearchStage> validStages = new ArrayList<>();
 
         for (ResearchStage stage : orderedStages) {
-            List<ItemStack> researchedItems = research.researchedItems.getOrDefault(stage, new ArrayList<>());
+            List<ItemStack> researchedItems = research.getResearchedItems().getOrDefault(stage, new ArrayList<>());
             if (!GameStageHelper.hasStage(player, GameStageSaveHandler.getPlayerData(player.getUniqueID()), stage.stageName) && !ItemStackUtils.containsItemStack(itemStack, researchedItems)) {
                 validStages.add(stage);
             }

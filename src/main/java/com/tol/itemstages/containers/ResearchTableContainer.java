@@ -1,5 +1,6 @@
 package com.tol.itemstages.containers;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.registries.ContainerRegistry;
 import com.tol.itemstages.research.PlayerResearch;
@@ -104,14 +105,14 @@ public class ResearchTableContainer extends Container {
 
 	public boolean canResearch(PlayerEntity player, int selection) {
 		List<ResearchStage> validResearch;
-		PlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
+		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch);
 
 		return validResearch.size() > selection && validResearch.get(selection).getRequiredExperienceCost(this.getSlot(0).getStack()) <= player.experienceLevel;
 	}
 
 	public void doResearch(ClientPlayerEntity player, int selection) {
-		PlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
+		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch).get(selection);
 		ResearchStageUtils.doResearch(player, validResearch, this.getSlot(0).getStack());
 	}

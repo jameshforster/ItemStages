@@ -1,5 +1,6 @@
 package com.tol.itemstages.networking;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.research.PlayerResearch;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -34,11 +35,11 @@ public class NetworkingHandler {
     }
 
 
-    public static void sendResearchMessageToServer(PlayerResearch playerResearch) {
+    public static void sendResearchMessageToServer(IPlayerResearch playerResearch) {
         INSTANCE.sendToServer(new ResearchUpdatePacketHandler(playerResearch));
     }
 
-    public static void sendResearchMessageToPlayer(PlayerResearch playerResearch, ServerPlayerEntity player) {
+    public static void sendResearchMessageToPlayer(IPlayerResearch playerResearch, ServerPlayerEntity player) {
         INSTANCE.sendTo(new ResearchUpdatePacketHandler(playerResearch), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
     }
 

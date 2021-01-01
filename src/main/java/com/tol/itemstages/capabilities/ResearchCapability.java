@@ -3,7 +3,6 @@ package com.tol.itemstages.capabilities;
 import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
 import com.tol.itemstages.utils.ResearchStageUtils;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Direction;
@@ -21,24 +20,24 @@ import java.util.Map;
 public class ResearchCapability {
 
 	@CapabilityInject(PlayerResearch.class)
-	public static Capability<PlayerResearch> PLAYER_RESEARCH = null;
+	public static Capability<IPlayerResearch> PLAYER_RESEARCH = null;
 
 	public static void register() {
-		CapabilityManager.INSTANCE.register(PlayerResearch.class, new Storage(), PlayerResearch::new);
+		CapabilityManager.INSTANCE.register(IPlayerResearch.class, new Storage(), PlayerResearch::new);
 	}
 
-	public static class Storage implements Capability.IStorage<PlayerResearch> {
+	public static class Storage implements Capability.IStorage<IPlayerResearch> {
 
 		@Nullable
 		@Override
-		public INBT writeNBT(Capability<PlayerResearch> capability, PlayerResearch instance, Direction side) {
+		public INBT writeNBT(Capability<IPlayerResearch> capability, IPlayerResearch instance, Direction side) {
 			CompoundNBT tag = new CompoundNBT();
 
-			for (Map.Entry<ResearchStage, BigDecimal> entry: instance.research.entrySet()) {
+			for (Map.Entry<ResearchStage, BigDecimal> entry: instance.getResearch().entrySet()) {
 				tag.putLong("research_" + entry.getKey().stageName, entry.getValue().longValue());
 			}
 
-			for (Map.Entry<ResearchStage, List<ItemStack>> entry : instance.researchedItems.entrySet()) {
+			for (Map.Entry<ResearchStage, List<ItemStack>> entry : instance.getResearchedItems().entrySet()) {
 				ListNBT items = new ListNBT();
 				for (ItemStack researchedItem : entry.getValue()) {
 					items.add(researchedItem.write(new CompoundNBT()));
@@ -49,7 +48,7 @@ public class ResearchCapability {
 		}
 
 		@Override
-		public void readNBT(Capability<PlayerResearch> capability, PlayerResearch instance, Direction side, INBT nbt) {
+		public void readNBT(Capability<IPlayerResearch> capability, IPlayerResearch instance, Direction side, INBT nbt) {
 			HashMap<ResearchStage, BigDecimal> playerResearch = new HashMap<>();
 			HashMap<ResearchStage, List<ItemStack>> researchedItems = new HashMap<>();
 			for (Map.Entry<String, ResearchStage> researchStage: ResearchStageUtils.RESEARCH_STAGES.entrySet()) {

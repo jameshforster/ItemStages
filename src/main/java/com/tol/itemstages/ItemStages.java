@@ -68,19 +68,12 @@ public class ItemStages
     }
 
 	@SubscribeEvent
-    public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-    	if (event.getObject() instanceof PlayerEntity) {
-			event.addCapability(new ResourceLocation("researchstages", "research"), new ResearchCapabilityProvider());
-		}
-	}
-
-	@SubscribeEvent
 	public void onPlayerDeath(PlayerEvent.Clone event) {
     	if (event.isWasDeath()) {
     		event.getOriginal().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
     			event.getEntity().getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(newCap -> {
-					newCap.setResearch(cap.research);
-					newCap.setResearchedItems(cap.researchedItems);
+					newCap.setResearch(cap.getResearch());
+					newCap.setResearchedItems(cap.getResearchedItems());
 				});
 			});
 		}

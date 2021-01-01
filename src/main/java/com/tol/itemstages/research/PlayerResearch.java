@@ -1,5 +1,6 @@
 package com.tol.itemstages.research;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.client.Minecraft;
@@ -22,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class PlayerResearch {
-
+public class PlayerResearch implements IPlayerResearch {
 
 	public PlayerResearch() {}
 
@@ -50,16 +50,20 @@ public class PlayerResearch {
 		this.researchedItems = researchedItems;
 	}
 
-	public HashMap<ResearchStage, BigDecimal> research = new HashMap<ResearchStage, BigDecimal>();
-	public HashMap<ResearchStage, List<ItemStack>> researchedItems = new HashMap<>();
+	private HashMap<ResearchStage, BigDecimal> research = new HashMap<>();
+	private HashMap<ResearchStage, List<ItemStack>> researchedItems = new HashMap<>();
 
 	public BigDecimal getProgress(ResearchStage researchStage) {
 		return research.getOrDefault(researchStage, new BigDecimal(0));
 	}
 
+	public HashMap<ResearchStage, BigDecimal> getResearch() {return this.research;};
+
 	public void setResearch(HashMap<ResearchStage, BigDecimal> input) {
 		this.research.putAll(input);
 	}
+
+	public HashMap<ResearchStage, List<ItemStack>> getResearchedItems() {return this.researchedItems;};
 
 	public void setResearchedItems(HashMap<ResearchStage, List<ItemStack>> input) {this.researchedItems.putAll(input);}
 
