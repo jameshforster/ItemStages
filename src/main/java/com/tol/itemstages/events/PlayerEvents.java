@@ -2,14 +2,18 @@ package com.tol.itemstages.events;
 
 import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
+import com.tol.itemstages.capabilities.ResearchCapabilityProvider;
 import com.tol.itemstages.networking.NetworkingHandler;
 import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.utils.ItemStageUtils;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -60,6 +64,13 @@ public class PlayerEvents {
 			LogManager.getLogger().info("[RESEARCHSTAGES] Player login event recorded on server side.");
 			IPlayerResearch research = event.getPlayer().getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
             NetworkingHandler.sendResearchMessageToPlayer(research, (ServerPlayerEntity) event.getPlayer());
+        }
+    }
+
+    @SubscribeEvent
+    public void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof PlayerEntity) {
+            event.addCapability(new ResourceLocation("researchstages", "research"), new ResearchCapabilityProvider());
         }
     }
 }

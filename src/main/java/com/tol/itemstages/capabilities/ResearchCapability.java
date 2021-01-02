@@ -9,6 +9,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class ResearchCapability {
 
-	@CapabilityInject(PlayerResearch.class)
+	@CapabilityInject(IPlayerResearch.class)
 	public static Capability<IPlayerResearch> PLAYER_RESEARCH = null;
 
 	public static void register() {

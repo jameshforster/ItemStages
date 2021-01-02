@@ -103,7 +103,7 @@ public class ResearchTableContainer extends Container {
 		return itemstack;
 	}
 
-	public boolean canResearch(PlayerEntity player, int selection) {
+	public boolean canResearch(ClientPlayerEntity player, int selection) {
 		List<ResearchStage> validResearch;
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch);

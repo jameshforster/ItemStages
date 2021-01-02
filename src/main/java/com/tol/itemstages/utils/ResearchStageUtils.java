@@ -38,22 +38,13 @@ public class ResearchStageUtils {
         player.sendStatusMessage(new StringTextComponent("Adding " + progressValue + " progress towards " + researchStage.stageName + " research."), false);
         player.addExperienceLevel(-experienceCost);
         player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
-            player.sendStatusMessage(new StringTextComponent("FOUND CAPABILITY TO UPDATE"), false);
-            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.getResearch().entrySet()) {
-                player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
-                player.sendStatusMessage(new StringTextComponent("Progress: " + thing.getValue()), false);
-            }
             cap.updateResearch(researchStage, progressValue);
             cap.updateResearchedItem(researchStage, itemStack);
-            player.sendStatusMessage(new StringTextComponent("CAPABILITY UPDATED"), false);
-            for (Map.Entry<ResearchStage, BigDecimal> thing : cap.getResearch().entrySet()) {
-                player.sendStatusMessage(new StringTextComponent("Stage: " + thing.getKey().stageName), false);
-                player.sendStatusMessage(new StringTextComponent("Progress: " + thing.getValue()), false);
-            }
+            player.sendStatusMessage(new StringTextComponent("Total progress for " + researchStage.stageName + " = " + cap.getProgress(researchStage)), false);
 
             boolean isComplete = cap.getResearch().getOrDefault(researchStage, new BigDecimal(0)).compareTo(new BigDecimal(100)) > -1;
             if (isComplete) {
-                player.sendStatusMessage(new StringTextComponent("COMPLETED PROGRESS FOR STAGE " + researchStage.stageName), false);
+                player.sendStatusMessage(new StringTextComponent("Research complete for " + researchStage.stageName), false);
                 cap.removeResearch(researchStage);
                 NetworkingHandler.sendStageUpdateToServer(researchStage.stageName);
             }
