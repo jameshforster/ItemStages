@@ -10,6 +10,8 @@ import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -21,22 +23,36 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ResearchTableContainer extends Container {
-	private final IInventory tableInventory = new Inventory(1);
+	private final IInventory tableInventory = new Inventory(2) {
+		public void markDirty() {
+			super.markDirty();
+			ResearchTableContainer.this.onCraftMatrixChanged(this);
+		}
+	};
 	private final World worldIn;
+	private List<ResearchStage> researchOptions = new ArrayList<>();
 	private final StonecutterContainer example = null;
 	private final EnchantmentContainer example2 = null;
 
 	public ResearchTableContainer(int windowId, World world, PlayerInventory playerInventory, PlayerEntity player) {
 		super(ContainerRegistry.RESEARCH_TABLE.get(), windowId);
 		this.worldIn = world;
-		this.addSlot(new Slot(this.tableInventory, 0, 20, 33) {
+		this.addSlot(new Slot(this.tableInventory, 0, 15, 47) {
+			public int getSlotStackLimit() {
+				return 1;
+			}
+		});
+		this.addSlot(new Slot(this.tableInventory, 1, 35, 47) {
 			public int getSlotStackLimit() {
 				return 1;
 			}
@@ -65,11 +81,11 @@ public class ResearchTableContainer extends Container {
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 			if (index == 0) {
-				if (!this.mergeItemStack(itemstack1, 1, 37, true)) {
+				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (index == 1) {
-				if (!this.mergeItemStack(itemstack1, 1, 37, true)) {
+				if (!this.mergeItemStack(itemstack1, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (itemstack1.getItem() == Items.LAPIS_LAZULI) {
@@ -103,6 +119,23 @@ public class ResearchTableContainer extends Container {
 		return itemstack;
 	}
 
+	public void setResearchOptions(ClientPlayerEntity player) {
+		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
+		this.researchOptions = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch);
+	}
+
+	public List<ResearchStage> getResearchOptions() {
+		return this.researchOptions;
+	}
+
+	public Optional<ResearchStage> getOptionalResearchOption(int selection) {
+		if (selection < 3 && this.researchOptions.size() > selection) {
+			Optional.of(this.researchOptions.get(selection));
+		}
+
+		return Optional.empty();
+	}
+
 	public boolean canResearch(ClientPlayerEntity player, int selection) {
 		List<ResearchStage> validResearch;
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
@@ -115,5 +148,25 @@ public class ResearchTableContainer extends Container {
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch).get(selection);
 		ResearchStageUtils.doResearch(player, validResearch, this.getSlot(0).getStack());
+		onCraftMatrixChanged(this.tableInventory);
+	}
+
+	public void onCraftMatrixChanged(IInventory inventoryIn) {
+		LogManager.getLogger().info("[RESEARCHSTAGES] Craft Matrix Changed");
+		if (inventoryIn == this.tableInventory) {
+			ItemStack itemstack = inventoryIn.getStackInSlot(0);
+			LogManager.getLogger().info("[RESEARCHSTAGES] Item in itemstack: " + itemstack);
+			LogManager.getLogger().info("[RESEARCHSTAGES] Worldin is remote: " + worldIn.isRemote);
+			if (worldIn.isRemote) {
+				if (!itemstack.isEmpty()) {
+					this.setResearchOptions(Minecraft.getInstance().player);
+					LogManager.getLogger().info("[RESEARCHSTAGES] New research options: " +  this.researchOptions);
+					this.detectAndSendChanges();
+				} else {
+					this.researchOptions.clear();
+				}
+			}
+		}
+
 	}
 }
