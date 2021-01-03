@@ -47,4 +47,41 @@ public class CrtMethods {
 
 		ResearchStageUtils.RESEARCH_STAGES.put(stageName, stage);
 	}
+
+	@ZenCodeType.Method
+	public static void setupResearchStage(String stageName, int experienceCost, int researchProgress) {
+		ResearchStage stage = new ResearchStage(stageName, experienceCost, researchProgress);
+
+		ResearchStageUtils.RESEARCH_STAGES.put(stageName, stage);
+	}
+
+	@ZenCodeType.Method
+	public static void addBasicItems(String stageName, IItemStack[] basicItems) {
+		ItemStack[] basicItemList = CraftTweakerHelper.getItemStacks(basicItems);
+		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
+		if (researchStage != null) {
+			for (ItemStack itemstack : basicItemList) {
+				researchStage.addBasicItem(itemstack);
+			}
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void addAdvancedItems(String stageName, IItemStack[] advancedItems) {
+		ItemStack[] advancedItemList = CraftTweakerHelper.getItemStacks(advancedItems);
+		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
+		if (researchStage != null) {
+			for (ItemStack itemstack : advancedItemList) {
+				researchStage.addAdvancedItem(itemstack);
+			}
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setResearchDescription(String stageName, String description) {
+		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
+		if (researchStage != null) {
+			researchStage.setDescription(description);
+		}
+	}
 }

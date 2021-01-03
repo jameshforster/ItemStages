@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.containers.ResearchTableContainer;
 import com.tol.itemstages.research.ResearchStage;
 import net.minecraft.client.gui.screen.EnchantmentScreen;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.*;
 import org.apache.logging.log4j.LogManager;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -78,22 +80,8 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
-//	@Override
-//	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-//		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-//		this.minecraft.getTextureManager().bindTexture(GUI);
-//		int relX = (this.width - this.xSize) / 2;
-//		int relY = (this.height - this.ySize) / 2;
-//		this.blit(matrixStack, relX, relY, 0, 0, this.xSize, this.ySize);
-//	}
-
-	private void sendLogMessage(String msg) {
-		LogManager.getLogger().info("[RESEARCHSTAGES]" + msg);
-	}
-
 	@Override
 	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-		sendLogMessage("Drawing Container Background");
 		RenderHelper.setupGuiFlatDiffuseLighting();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(ENCHANTMENT_TABLE_GUI_TEXTURE);
@@ -155,32 +143,26 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 		RenderSystem.matrixMode(5888);
 		RenderHelper.setupGui3DDiffuseLighting();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-//		EnchantmentNameParts.getInstance().reseedRandomGenerator((long)this.container.func_217005_f());
-//		int l = this.container.getLapisAmount();
 
 		for(int i1 = 0; i1 < 3; ++i1) {
-//			sendLogMessage("For loop iteration i1: " + i1);
 
 			int j1 = i + 60;
 			int k1 = j1 + 20;
 			this.setBlitOffset(0);
 			this.minecraft.getTextureManager().bindTexture(ENCHANTMENT_TABLE_GUI_TEXTURE);
-			int researchCost = 0;
+			int researchCost = -1;
 			if (i1 < this.container.getResearchOptions().size()) {
 				researchCost = this.container.getResearchOptions().get(i1).getRequiredExperienceCost(this.container.getSlot(0).getStack());
 			}
-//			int l1 = (this.container).enchantLevels[i1];
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-//			sendLogMessage("If statement research cost: " + researchCost + " == 0");
-			if (researchCost == 0) {
+			if (researchCost == -1) {
 				this.blit(matrixStack, j1, j + 14 + 19 * i1, 0, 185, 108, 19);
 			} else {
 				String s = "" + researchCost;
 				int i2 = 86 - this.font.getStringWidth(s);
 				ITextProperties itextproperties = EnchantmentNameParts.getInstance().getGalacticEnchantmentName(this.font, i2);
 				int j2 = 6839882;
-//				sendLogMessage("If statement player exp: " + this.minecraft.player.experienceLevel + " < research cost: " + researchCost);
 				if (((this.minecraft.player.experienceLevel < researchCost) && !this.minecraft.player.abilities.isCreativeMode)) { // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
 					this.blit(matrixStack, j1, j + 14 + 19 * i1, 0, 185, 108, 19);
 					this.blit(matrixStack, j1 + 1, j + 15 + 19 * i1, 16 * i1, 239, 16, 16);
@@ -209,65 +191,41 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		sendLogMessage("Calling Render");
-		sendLogMessage("Available research: " + this.container.getResearchOptions().size());
 		partialTicks = this.minecraft.getRenderPartialTicks();
 		this.renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
 		boolean flag = this.minecraft.player.abilities.isCreativeMode;
 
-//		int i = this.container.getLapisAmount();
-
 		for(int j = 0; j < 3; ++j) {
-//			sendLogMessage("For loop iteration j: " + j);
+			int researchCost = -1;
 			ResearchStage researchStage = null;
-			int researchCost = 0;
 			if (j < this.container.getResearchOptions().size()) {
 				researchStage = this.container.getResearchOptions().get(j);
 				researchCost = researchStage.getRequiredExperienceCost(this.container.getSlot(0).getStack());
-				sendLogMessage("Research found: " + this.container.getResearchOptions().get(j).stageName);
-			} else {
-				sendLogMessage("Research not found");
 			}
-			sendLogMessage("Research Cost: " + researchCost);
-//			int k = (this.container).enchantLevels[j];
-//			Enchantment enchantment = Enchantment.getEnchantmentByID((this.container).enchantClue[j]);
-//			int l = (this.container).worldClue[j];
 			int i1 = j + 1;
-//			sendLogMessage("If statement:");
-//			sendLogMessage("Point in region check: " + this.isPointInRegion(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY));
-//			sendLogMessage("AND research cost: " + researchCost + " > 0");
 
-			if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && researchCost > 0) {
+			if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && researchCost > -1) {
 				List<ITextComponent> list = Lists.newArrayList();
-//				list.add((new TranslationTextComponent("container.enchant.clue", enchantment == null ? "" : enchantment.getDisplayName(l))).mergeStyle(TextFormatting.WHITE));
-//				sendLogMessage("If statement research stage is not present: " + !researchStage.isPresent());
-				if(researchStage != null) {
-					list.add(new StringTextComponent(""));
-					list.add(new TranslationTextComponent("forge.container.enchant.limitedEnchantability").mergeStyle(TextFormatting.RED));
-				} else if (!flag) {
-					list.add(StringTextComponent.EMPTY);
-//					sendLogMessage("If statement experience level: " + this.minecraft.player.experienceLevel + " < research cost: " + researchCost);
+				if (!flag) {
 					if (this.minecraft.player.experienceLevel < researchCost) {
 						list.add((new TranslationTextComponent("container.enchant.level.requirement", researchCost)).mergeStyle(TextFormatting.RED));
 					} else {
-						IFormattableTextComponent iformattabletextcomponent;
-						if (i1 == 1) {
-							iformattabletextcomponent = new TranslationTextComponent("container.enchant.lapis.one");
-						} else {
-							iformattabletextcomponent = new TranslationTextComponent("container.enchant.lapis.many", i1);
-						}
-
-//						list.add(iformattabletextcomponent.mergeStyle(i >= i1 ? TextFormatting.GRAY : TextFormatting.RED));
-						IFormattableTextComponent iformattabletextcomponent1;
-						if (i1 == 1) {
-							iformattabletextcomponent1 = new TranslationTextComponent("container.enchant.level.one");
-						} else {
-							iformattabletextcomponent1 = new TranslationTextComponent("container.enchant.level.many", i1);
-						}
-
-						list.add(iformattabletextcomponent1.mergeStyle(TextFormatting.GRAY));
+						IFormattableTextComponent name = new StringTextComponent(researchStage.getDescriptiveName());
+						list.add(name);
+						IFormattableTextComponent description = new StringTextComponent(researchStage.description);
+						list.add(description.mergeStyle(TextFormatting.GRAY));
+						IFormattableTextComponent progress = new StringTextComponent("Progress towards completion: " + researchStage.returnResearchGained(this.container.getSlot(0).getStack()) + "%");
+						list.add(progress.mergeStyle(TextFormatting.GRAY));
+						ResearchStage finalResearchStage = researchStage;
+						this.minecraft.player.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
+							BigDecimal currentProgress = cap.getProgress(finalResearchStage);
+							if (currentProgress.compareTo(new BigDecimal(0)) > 0) {
+								IFormattableTextComponent currentProgressText = new StringTextComponent("Current progress: " + currentProgress + "%");
+								list.add(currentProgressText.mergeStyle(TextFormatting.GRAY));
+							}
+						});
 					}
 				}
 
@@ -294,7 +252,7 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 		boolean flag = false;
 
 		for(int i = 0; i < 3; ++i) {
-			if ((this.container).getOptionalResearchOption(i).isPresent()) {
+			if (i < this.container.getResearchOptions().size()) {
 				flag = true;
 			}
 		}
