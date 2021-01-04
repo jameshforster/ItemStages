@@ -2,7 +2,6 @@ package com.tol.itemstages.compat.crt;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
-import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
 import com.tol.itemstages.research.ResearchStage;
@@ -73,6 +72,17 @@ public class CrtMethods {
 		if (researchStage != null) {
 			for (ItemStack itemstack : advancedItemList) {
 				researchStage.addAdvancedItem(itemstack);
+			}
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void addResearchItems(String stageName, IItemStack[] items, int experienceCost, int researchProgress) {
+		ItemStack[] itemList = CraftTweakerHelper.getItemStacks(items);
+		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
+		if (researchStage != null) {
+			for (ItemStack itemStack : itemList) {
+				researchStage.addResearchItem(itemStack, experienceCost, researchProgress);
 			}
 		}
 	}

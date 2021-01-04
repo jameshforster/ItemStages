@@ -1,7 +1,6 @@
 package com.tol.itemstages.networking;
 
 import com.tol.itemstages.capabilities.IPlayerResearch;
-import com.tol.itemstages.research.PlayerResearch;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;

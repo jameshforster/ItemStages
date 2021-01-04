@@ -3,7 +3,6 @@ package com.tol.itemstages.utils;
 import com.tol.itemstages.capabilities.IPlayerResearch;
 import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.networking.NetworkingHandler;
-import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.GameStageSaveHandler;

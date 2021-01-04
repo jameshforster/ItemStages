@@ -6,31 +6,22 @@ import com.tol.itemstages.registries.ContainerRegistry;
 import com.tol.itemstages.research.PlayerResearch;
 import com.tol.itemstages.research.ResearchStage;
 import com.tol.itemstages.utils.ResearchStageUtils;
-import net.darkhax.gamestages.GameStageHelper;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.*;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.EnchantmentContainer;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.inventory.container.StonecutterContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ResearchTableContainer extends Container {
 	private final IInventory tableInventory = new Inventory(2) {
@@ -58,13 +49,13 @@ public class ResearchTableContainer extends Container {
 			}
 		});
 
-		for(int i = 0; i < 3; ++i) {
-			for(int j = 0; j < 9; ++j) {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 9; ++j) {
 				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
-		for(int k = 0; k < 9; ++k) {
+		for (int k = 0; k < 9; ++k) {
 			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
 		}
 	}
@@ -128,14 +119,6 @@ public class ResearchTableContainer extends Container {
 		return this.researchOptions;
 	}
 
-	public Optional<ResearchStage> getOptionalResearchOption(int selection) {
-		if (selection < 3 && this.researchOptions.size() > selection) {
-			Optional.of(this.researchOptions.get(selection));
-		}
-
-		return Optional.empty();
-	}
-
 	public boolean canResearch(ClientPlayerEntity player, int selection) {
 		List<ResearchStage> validResearch;
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
@@ -152,15 +135,11 @@ public class ResearchTableContainer extends Container {
 	}
 
 	public void onCraftMatrixChanged(IInventory inventoryIn) {
-		LogManager.getLogger().info("[RESEARCHSTAGES] Craft Matrix Changed");
 		if (inventoryIn == this.tableInventory) {
 			ItemStack itemstack = inventoryIn.getStackInSlot(0);
-			LogManager.getLogger().info("[RESEARCHSTAGES] Item in itemstack: " + itemstack);
-			LogManager.getLogger().info("[RESEARCHSTAGES] Worldin is remote: " + worldIn.isRemote);
 			if (worldIn.isRemote) {
 				if (!itemstack.isEmpty()) {
 					this.setResearchOptions(Minecraft.getInstance().player);
-					LogManager.getLogger().info("[RESEARCHSTAGES] New research options: " +  this.researchOptions);
 					this.detectAndSendChanges();
 				} else {
 					this.researchOptions.clear();

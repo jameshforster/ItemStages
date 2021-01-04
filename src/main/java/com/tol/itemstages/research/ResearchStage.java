@@ -3,76 +3,87 @@ package com.tol.itemstages.research;
 import com.tol.itemstages.utils.ItemStackUtils;
 import net.minecraft.item.ItemStack;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ResearchStage {
     public String stageName;
     public String description = "";
-    private int experienceCost;
-    private int researchValue;
-    public List<ItemStack> basicItems = new ArrayList<>();
-    public List<ItemStack> advancedItems = new ArrayList<>();
+    public HashMap<ItemStack, ResearchValues> researchItems = new HashMap<>();
+    private final ResearchValues basicResearchValuesDefault;
+    private final ResearchValues advancedResearchValuesDefault;
 
-    public ResearchStage(String stageName, int experienceCost, int researchValue) {
-        new ResearchStage(stageName, experienceCost, researchValue, new ArrayList<>(), new ArrayList<>());
+    public ResearchStage(String stageName, int defaultExperienceCost, int defaultResearchValue) {
+		this.stageName = stageName;
+
+		int calculatedExpCost = 0;
+		if (defaultExperienceCost > 5) {
+			calculatedExpCost = defaultExperienceCost - 5;
+		}
+
+		basicResearchValuesDefault = new ResearchValues(defaultExperienceCost, defaultResearchValue);
+		advancedResearchValuesDefault = new ResearchValues(calculatedExpCost, defaultResearchValue * 2);
     }
 
-    public ResearchStage(String stageName, int experienceCost, int researchValue, List<ItemStack> basicItems, List<ItemStack> advancedItems) {
+    public ResearchStage(String stageName, int defaultExperienceCost, int defaultResearchValue, List<ItemStack> basicItems, List<ItemStack> advancedItems) {
         this.stageName = stageName;
-        this.experienceCost = experienceCost;
-        this.researchValue = researchValue;
-        this.basicItems.addAll(basicItems);
-        this.advancedItems.addAll(advancedItems);
+
+		int advancedExpCost = 0;
+		if (defaultExperienceCost > 5) {
+			advancedExpCost = defaultExperienceCost - 5;
+		}
+
+        basicResearchValuesDefault = new ResearchValues(defaultExperienceCost, defaultResearchValue);
+        advancedResearchValuesDefault = new ResearchValues(advancedExpCost, defaultResearchValue * 2);
+
+        for (ItemStack basicItem : basicItems) {
+        	researchItems.put(basicItem, basicResearchValuesDefault);
+		}
+        for (ItemStack advancedItem : advancedItems) {
+        	researchItems.put(advancedItem, advancedResearchValuesDefault);
+		}
     }
 
     public void addBasicItem(ItemStack input) {
-        if (!containsBasicItem(input)) {
-            this.basicItems.add(input);
-        }
+		this.researchItems.put(input, basicResearchValuesDefault);
     }
 
     public void addAdvancedItem(ItemStack input) {
-        if (!containsAdvancedItem(input)) {
-            this.advancedItems.add(input);
-        }
+		this.researchItems.put(input, advancedResearchValuesDefault);
     }
+
+    public void addResearchItem(ItemStack input, int experienceCost, int progressValue) {
+    	this.researchItems.put(input, new ResearchValues(experienceCost, progressValue));
+	}
 
     public void setDescription(String description) {
         this.description = description;
     }
 
     public boolean containsItem(ItemStack input) {
-       return containsBasicItem(input) || containsAdvancedItem(input);
-    }
-
-    public boolean containsBasicItem(ItemStack input) {
-        return ItemStackUtils.containsItemStack(input, basicItems);
-    }
-
-    public boolean containsAdvancedItem(ItemStack input) {
-        return ItemStackUtils.containsItemStack(input, advancedItems);
+		return ItemStackUtils.containsItemStack(input, this.researchItems.keySet());
     }
 
     public int getRequiredExperienceCost(ItemStack input) {
-        if (containsBasicItem(input)) {
-            return experienceCost;
-        }
-
-        if (containsAdvancedItem(input) && experienceCost > 5) {
-            return experienceCost - 5;
-        }
+    	if (containsItem(input)) {
+    		for (Map.Entry<ItemStack, ResearchValues> entry : this.researchItems.entrySet()) {
+    			if (entry.getKey().isItemEqual(input)) {
+    				return entry.getValue().experienceCost;
+				}
+			}
+		}
 
         return 0;
     }
 
     public int returnResearchGained(ItemStack input) {
-		if (containsBasicItem(input)) {
-			return researchValue;
-		}
-
-		if (containsAdvancedItem(input)) {
-			return researchValue * 2;
+		if (containsItem(input)) {
+			for (Map.Entry<ItemStack, ResearchValues> entry : this.researchItems.entrySet()) {
+				if (entry.getKey().isItemEqual(input)) {
+					return entry.getValue().progressGiven;
+				}
+			}
 		}
 
 		return 0;

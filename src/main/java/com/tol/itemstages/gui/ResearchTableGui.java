@@ -23,11 +23,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.*;
-import org.apache.logging.log4j.LogManager;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {

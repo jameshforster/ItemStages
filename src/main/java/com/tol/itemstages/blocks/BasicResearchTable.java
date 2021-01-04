@@ -1,12 +1,9 @@
 package com.tol.itemstages.blocks;
 
 import com.tol.itemstages.containers.ResearchTableContainer;
-import com.tol.itemstages.research.ResearchStage;
-import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;

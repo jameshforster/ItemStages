@@ -1,36 +1,32 @@
 package com.tol.itemstages.research;
 
 import com.tol.itemstages.capabilities.IPlayerResearch;
-import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.utils.ResearchStageUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class PlayerResearch implements IPlayerResearch {
 
-	public PlayerResearch() {}
+	private final HashMap<ResearchStage, BigDecimal> research;
+	private final HashMap<ResearchStage, List<ItemStack>> researchedItems;
+
+	public PlayerResearch() {
+		this.research = new HashMap<>();
+		this.researchedItems = new HashMap<>();
+	}
 
 	public PlayerResearch(CompoundNBT nbt) {
 		HashMap<ResearchStage, BigDecimal> playerResearch = new HashMap<>();
 		HashMap<ResearchStage, List<ItemStack>> researchedItems = new HashMap<>();
-		for (Map.Entry<String, ResearchStage> researchStage: ResearchStageUtils.RESEARCH_STAGES.entrySet()) {
+		for (Map.Entry<String, ResearchStage> researchStage : ResearchStageUtils.RESEARCH_STAGES.entrySet()) {
 			long progress = nbt.getLong("research_" + researchStage.getKey());
 			INBT items = nbt.get("researched_items_" + researchStage.getKey());
 			List<ItemStack> itemStacks = new ArrayList<>();
@@ -50,22 +46,29 @@ public class PlayerResearch implements IPlayerResearch {
 		this.researchedItems = researchedItems;
 	}
 
-	private HashMap<ResearchStage, BigDecimal> research = new HashMap<>();
-	private HashMap<ResearchStage, List<ItemStack>> researchedItems = new HashMap<>();
-
 	public BigDecimal getProgress(ResearchStage researchStage) {
 		return research.getOrDefault(researchStage, new BigDecimal(0));
 	}
 
-	public HashMap<ResearchStage, BigDecimal> getResearch() {return this.research;};
+	public HashMap<ResearchStage, BigDecimal> getResearch() {
+		return this.research;
+	}
+
+	;
 
 	public void setResearch(HashMap<ResearchStage, BigDecimal> input) {
 		this.research.putAll(input);
 	}
 
-	public HashMap<ResearchStage, List<ItemStack>> getResearchedItems() {return this.researchedItems;};
+	public HashMap<ResearchStage, List<ItemStack>> getResearchedItems() {
+		return this.researchedItems;
+	}
 
-	public void setResearchedItems(HashMap<ResearchStage, List<ItemStack>> input) {this.researchedItems.putAll(input);}
+	;
+
+	public void setResearchedItems(HashMap<ResearchStage, List<ItemStack>> input) {
+		this.researchedItems.putAll(input);
+	}
 
 	public void updateResearch(ResearchStage researchStage, BigDecimal progress) {
 		BigDecimal currentProgress = research.getOrDefault(researchStage, new BigDecimal(0));
