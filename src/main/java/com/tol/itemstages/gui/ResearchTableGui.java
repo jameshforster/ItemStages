@@ -212,8 +212,10 @@ public class ResearchTableGui extends ContainerScreen<ResearchTableContainer> {
 					} else {
 						IFormattableTextComponent name = new StringTextComponent(researchStage.getDescriptiveName());
 						list.add(name);
-						IFormattableTextComponent description = new StringTextComponent(researchStage.description);
-						list.add(description.mergeStyle(TextFormatting.GRAY));
+						if (!researchStage.description.equals("")) {
+							IFormattableTextComponent description = new StringTextComponent(researchStage.description);
+							list.add(description.mergeStyle(TextFormatting.GRAY));
+						}
 						IFormattableTextComponent progress = new StringTextComponent("Progress towards completion: " + researchStage.returnResearchGained(this.container.getSlot(0).getStack()) + "%");
 						list.add(progress.mergeStyle(TextFormatting.GRAY));
 						ResearchStage finalResearchStage = researchStage;

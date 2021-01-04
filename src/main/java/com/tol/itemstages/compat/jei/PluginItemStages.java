@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +42,8 @@ public class PluginItemStages implements IModPlugin {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void syncHiddenItems(PlayerEntity player) {
-
-		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.hideRestrictionsInJEI) {
+		LogManager.getLogger().info("Configuration for JEI: " + ConfigurationHandler.JEIRestrictionsEnabled.get());
+		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.JEIRestrictionsEnabled.get()) {
 			Collection<ItemStack> hiddenCollection = new ArrayList<>();
 			Collection<ItemStack> revealCollection = new ArrayList<>();
 			for (ItemStack itemStack : ItemStageUtils.INSTANCE.ITEM_STAGES.keySet()) {
@@ -65,7 +66,7 @@ public class PluginItemStages implements IModPlugin {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void syncHiddenRecipes(PlayerEntity player) {
-		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.hideRestrictionsInJEI) {
+		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.JEIRestrictionsEnabled.get()) {
 			for (String resourceLocation : RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.keySet()) {
                 IRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation);
                 if (RecipeStageUtils.INSTANCE.hasAllStages(player, resourceLocation)) {

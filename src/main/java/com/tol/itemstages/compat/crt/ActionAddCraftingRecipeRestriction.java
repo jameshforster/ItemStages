@@ -12,8 +12,6 @@ import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +20,6 @@ import java.util.List;
 public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
     String stage;
     List<String> recipeNames = new ArrayList<>();
-
-	private static final Logger LOGGER = LogManager.getLogger();
 
 	public ActionAddCraftingRecipeRestriction(IRecipeManager manager, String stage, IItemStack itemStack, boolean includeIngredients) {
         super(manager);
@@ -51,12 +47,6 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
 				}
 			}
 		}
-    }
-
-    public ActionAddCraftingRecipeRestriction(IRecipeManager manager, String stage, List<String> recipeNames) {
-        super(manager);
-        this.stage = stage;
-        this.recipeNames.addAll(recipeNames);
     }
 
     @Override

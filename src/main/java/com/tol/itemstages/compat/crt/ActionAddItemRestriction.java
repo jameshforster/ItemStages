@@ -16,15 +16,28 @@ public class ActionAddItemRestriction implements IRuntimeAction {
 
     private final String stage;
     private final ItemStack itemStack;
+    private final boolean removeRecipes;
+    private final boolean includeRecipeIngredients;
 
     public ActionAddItemRestriction(String stage, IItemStack itemStack) {
         this.stage = stage;
         this.itemStack = itemStack.getInternal();
+        this.removeRecipes = true;
+        this.includeRecipeIngredients = true;
     }
 
-    public ActionAddItemRestriction(String stage, Item item) {
+    public ActionAddItemRestriction(String stage, IItemStack itemStack, boolean removeRecipes, boolean includeRecipeIngredients) {
+        this.stage = stage;
+        this.itemStack = itemStack.getInternal();
+        this.removeRecipes = removeRecipes;
+        this.includeRecipeIngredients = includeRecipeIngredients;
+    }
+
+    public ActionAddItemRestriction(String stage, Item item, boolean removeRecipes, boolean includeRecipeIngredients) {
         this.stage = stage;
         this.itemStack = item.getDefaultInstance();
+        this.removeRecipes = removeRecipes;
+        this.includeRecipeIngredients = includeRecipeIngredients;
     }
 
     @Override
@@ -36,7 +49,9 @@ public class ActionAddItemRestriction implements IRuntimeAction {
         itemStackList.add(itemStack);
         IItemStack iItemStack = CraftTweakerHelper.getIItemStacks(itemStackList).get(0);
         ItemStageUtils.INSTANCE.updateStages(stage, itemStack);
-        CraftTweakerAPI.apply(new ActionAddCraftingRecipeRestriction(CTCraftingTableManager.INSTANCE, stage, iItemStack, true));
+        if (removeRecipes) {
+            CraftTweakerAPI.apply(new ActionAddCraftingRecipeRestriction(CTCraftingTableManager.INSTANCE, stage, iItemStack, includeRecipeIngredients));
+        }
     }
 
     @Override
