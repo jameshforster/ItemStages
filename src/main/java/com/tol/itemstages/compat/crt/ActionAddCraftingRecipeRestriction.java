@@ -4,15 +4,18 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionRecipeBase;
 import com.blamejared.crafttweaker.impl.recipes.wrappers.WrapperRecipe;
+import com.tol.itemstages.recipes.ProxyRecipe;
 import com.tol.itemstages.recipes.StagedCraftingRecipe;
 import com.tol.itemstages.utils.RecipeStageUtils;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +64,7 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
                 if (!stages.contains(stage)) {
                     stages.add(stage);
                 }
+                IRecipe<IInventory> test = (IRecipe<IInventory>) Proxy.newProxyInstance(recipe.getClass().getClassLoader(),new Class[] {ICraftingRecipe.class, IRecipe.class}, new ProxyRecipe(recipe, stages));
                 RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.put(name, stages);
                 getManager().removeByName(name);
                 StagedCraftingRecipe newRecipe;
@@ -71,8 +75,8 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
                     newRecipe = new StagedCraftingRecipe(stages, (ICraftingRecipe) recipe);
                 }
 
-                RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, newRecipe);
-                getManager().getRecipes().put(recipe.getId(), newRecipe);
+                RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, test);
+                getManager().getRecipes().put(recipe.getId(), test);
             }
         }
     }
