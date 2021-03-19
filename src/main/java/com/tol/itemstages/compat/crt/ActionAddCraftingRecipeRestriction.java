@@ -5,8 +5,10 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionRecipeBase;
 import com.blamejared.crafttweaker.impl.recipes.wrappers.WrapperRecipe;
 import com.tol.itemstages.recipes.StagedCraftingRecipe;
+import com.tol.itemstages.recipes.StagedRecipe;
 import com.tol.itemstages.utils.RecipeStageUtils;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
@@ -54,21 +56,21 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
         for (String name : recipeNames) {
             List<String> stages = new ArrayList<>();
 			IRecipe<?> recipe = getManager().getRecipes().get(new ResourceLocation(name));
-            if (recipe != null && ICraftingRecipe.class.isAssignableFrom(recipe.getClass())) {
-                if (recipe instanceof StagedCraftingRecipe) {
-                    stages.addAll(((StagedCraftingRecipe) recipe).stages);
+            if (recipe != null && IInventory.class.isAssignableFrom(recipe.getType().getClass())) {
+                if (recipe instanceof StagedRecipe) {
+                    stages.addAll(((StagedRecipe) recipe).stages);
                 }
                 if (!stages.contains(stage)) {
                     stages.add(stage);
                 }
                 RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.put(name, stages);
                 getManager().removeByName(name);
-                StagedCraftingRecipe newRecipe;
-                if (recipe instanceof StagedCraftingRecipe) {
-                    IRecipe<CraftingInventory> baseRecipe = ((StagedCraftingRecipe) recipe).recipe;
-                    newRecipe = new StagedCraftingRecipe(stages, baseRecipe);
+                StagedRecipe newRecipe;
+                if (recipe instanceof StagedRecipe) {
+                    IRecipe<IInventory> baseRecipe = ((StagedRecipe) recipe).recipe;
+                    newRecipe = new StagedRecipe(stages, baseRecipe);
                 } else {
-                    newRecipe = new StagedCraftingRecipe(stages, (ICraftingRecipe) recipe);
+                    newRecipe = new StagedRecipe(stages, (IRecipe<IInventory>) recipe);
                 }
 
                 RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, newRecipe);
