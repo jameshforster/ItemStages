@@ -5,20 +5,20 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionRecipeBase;
 import com.blamejared.crafttweaker.impl.recipes.wrappers.WrapperRecipe;
 import com.tol.itemstages.recipes.ProxyRecipe;
-import com.tol.itemstages.recipes.StagedCraftingRecipe;
+import com.tol.itemstages.recipes.StagedRecipe;
 import com.tol.itemstages.utils.RecipeStageUtils;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.blamejared.crafttweaker.api.CraftTweakerGlobals.println;
 
 public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
     String stage;
@@ -55,28 +55,24 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
     @Override
     public void apply() {
         for (String name : recipeNames) {
-            List<String> stages = new ArrayList<>();
+            List<String> stages = RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.getOrDefault(name, new ArrayList<>());
 			IRecipe<?> recipe = getManager().getRecipes().get(new ResourceLocation(name));
-            if (recipe != null && ICraftingRecipe.class.isAssignableFrom(recipe.getClass())) {
-                if (recipe instanceof StagedCraftingRecipe) {
-                    stages.addAll(((StagedCraftingRecipe) recipe).stages);
-                }
+            if (recipe != null) {
                 if (!stages.contains(stage)) {
                     stages.add(stage);
                 }
-                IRecipe<IInventory> test = (IRecipe<IInventory>) Proxy.newProxyInstance(recipe.getClass().getClassLoader(),new Class[] {ICraftingRecipe.class, IRecipe.class}, new ProxyRecipe(recipe, stages));
-                RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.put(name, stages);
-                getManager().removeByName(name);
-                StagedCraftingRecipe newRecipe;
-                if (recipe instanceof StagedCraftingRecipe) {
-                    IRecipe<CraftingInventory> baseRecipe = ((StagedCraftingRecipe) recipe).recipe;
-                    newRecipe = new StagedCraftingRecipe(stages, baseRecipe);
-                } else {
-                    newRecipe = new StagedCraftingRecipe(stages, (ICraftingRecipe) recipe);
+
+                if (Arrays.toString(recipe.getClass().getInterfaces()).contains("interface javassist.util.proxy.ProxyObject")) {
+                    recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(name).originalRecipe;
                 }
 
-                RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, test);
-                getManager().getRecipes().put(recipe.getId(), test);
+                getManager().removeByName(name);
+                IRecipe<?> newRecipe;
+                newRecipe = new ProxyRecipe<>(recipe, stages).stagedRecipe;
+
+                RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.put(name, stages);
+                RecipeStageUtils.INSTANCE.STAGED_RECIPES.put(name, new StagedRecipe<>(recipe, newRecipe));
+                getManager().getRecipes().put(recipe.getId(), newRecipe);
             }
         }
     }

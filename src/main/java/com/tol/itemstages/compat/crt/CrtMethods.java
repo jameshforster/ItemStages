@@ -4,9 +4,12 @@ import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.api.managers.IRecipeManager;
+import com.blamejared.crafttweaker.impl.blocks.MCBlock;
 import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
 import com.blamejared.crafttweaker.impl.tag.MCTag;
 import com.tol.itemstages.research.ResearchStage;
+import com.tol.itemstages.utils.ItemStageUtils;
 import com.tol.itemstages.utils.ResearchStageUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,9 +33,16 @@ public class CrtMethods {
 	}
 
 	@ZenCodeType.Method
-	public static void addItemStage(String stage, IIngredient input, boolean removeRecipes, boolean includeRecipeIngredients) {
+	public static void addItemStage(String stage, IIngredient input, boolean includeRecipeIngredients) {
 		for (IItemStack itemStack : input.getItems()) {
-			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, removeRecipes, includeRecipeIngredients));
+			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, true, includeRecipeIngredients));
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void addManagerItemStage(String stage, IIngredient input, IRecipeManager recipeManager, boolean includeRecipeIngredients) {
+		for (IItemStack itemStack : input.getItems()) {
+			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, recipeManager, includeRecipeIngredients));
 		}
 	}
 
@@ -54,6 +64,20 @@ public class CrtMethods {
 			if (item != null && item != Items.AIR && item.getCreatorModId(item.getDefaultInstance()).equals(modId)) {
 				CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, item, removeRecipes, includeRecipeIngredients));
 			}
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setStagedItemName(IIngredient input, String name) {
+		for (IItemStack itemStack : input.getItems()) {
+			ItemStageUtils.INSTANCE.updateHiddenName(name, itemStack.getInternal());
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setStagedBlock(MCTag input, String name) {
+		for (MCBlock block : input.getBlocks()) {
+			new ActionAddBlockRestriction(block, name);
 		}
 	}
 

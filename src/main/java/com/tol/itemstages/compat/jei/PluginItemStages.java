@@ -54,11 +54,11 @@ public class PluginItemStages implements IModPlugin {
 				}
 			}
 
-			if (!hiddenCollection.isEmpty()) {
+			if (!hiddenCollection.isEmpty() && ingredientManager != null) {
 				ingredientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM, hiddenCollection);
 			}
 
-			if (!revealCollection.isEmpty()) {
+			if (!revealCollection.isEmpty() && ingredientManager != null) {
 				ingredientManager.addIngredientsAtRuntime(VanillaTypes.ITEM, revealCollection);
 			}
 		}
@@ -68,11 +68,11 @@ public class PluginItemStages implements IModPlugin {
 	public static void syncHiddenRecipes(PlayerEntity player) {
 		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.JEIRestrictionsEnabled.get()) {
 			for (String resourceLocation : RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.keySet()) {
-                IRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation);
+                IRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation).stagedRecipe;
                 if (RecipeStageUtils.INSTANCE.hasAllStages(player, resourceLocation)) {
-                    recipeManager.unhideRecipe(recipe, CRAFTING);
+                    recipeManager.unhideRecipe(recipe, recipe.getId());
                 } else {
-                    recipeManager.hideRecipe(recipe, CRAFTING);
+                    recipeManager.hideRecipe(recipe, recipe.getId());
                 }
 			}
 		}

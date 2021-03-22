@@ -1,10 +1,13 @@
 package com.tol.itemstages.events;
 
 import com.tol.itemstages.compat.jei.PluginItemStages;
+import com.tol.itemstages.utils.BlockStageUtils;
 import com.tol.itemstages.utils.ItemStageUtils;
+import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -43,6 +46,20 @@ public class ClientEvents {
         if (ModList.get().getModContainerById("jei").isPresent()) {
             PluginItemStages.syncHiddenItems(player);
             PluginItemStages.syncHiddenRecipes(player);
+        }
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void onWailaTooltipEvent(WailaTooltipEvent event) {
+        ResourceLocation blockName = event.getAccessor().getBlockId();
+        if (BlockStageUtils.INSTANCE.STAGED_BLOCKS.containsKey(blockName)) {
+            if (!BlockStageUtils.INSTANCE.hasAllStages(event.getAccessor().getPlayer(), blockName)) {
+                event.getCurrentTip().clear();
+                event.getCurrentTip().add(new StringTextComponent(
+                        BlockStageUtils.INSTANCE.STAGED_BLOCK_NAMES.getOrDefault(blockName, "Unknown")
+                ));
+            }
         }
     }
 }
