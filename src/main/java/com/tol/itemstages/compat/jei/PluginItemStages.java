@@ -69,9 +69,9 @@ public class PluginItemStages implements IModPlugin {
 		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.JEIRestrictionsEnabled.get()) {
 			for (String resourceLocation : RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.keySet()) {
                 IRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation).stagedRecipe;
-                if (RecipeStageUtils.INSTANCE.hasAllStages(player, resourceLocation)) {
+                if (RecipeStageUtils.INSTANCE.hasAllStages(player, resourceLocation) && recipeManager != null) {
                     recipeManager.unhideRecipe(recipe, recipe.getId());
-                } else {
+                } else if (recipeManager != null) {
                     recipeManager.hideRecipe(recipe, recipe.getId());
                 }
 			}

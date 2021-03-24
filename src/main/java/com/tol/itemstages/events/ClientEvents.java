@@ -4,6 +4,7 @@ import com.tol.itemstages.compat.jei.PluginItemStages;
 import com.tol.itemstages.utils.BlockStageUtils;
 import com.tol.itemstages.utils.ItemStageUtils;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
+import mezz.jei.events.PlayerJoinedWorldEvent;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,6 +41,12 @@ public class ClientEvents {
     @OnlyIn(Dist.CLIENT)
     public void onClientLoadComplete(FMLLoadCompleteEvent event) {
     	jeiConditional(PlayerUtils.getClientPlayer());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public void onJeiFirstLoad(PlayerJoinedWorldEvent event) {
+        jeiConditional(PlayerUtils.getClientPlayer());
     }
 
     private void jeiConditional(PlayerEntity player) {
