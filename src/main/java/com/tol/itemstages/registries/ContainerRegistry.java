@@ -1,7 +1,10 @@
 package com.tol.itemstages.registries;
 
+import com.tol.itemstages.blocks.ResearchTable;
 import com.tol.itemstages.containers.ResearchTableContainer;
+import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.RegistryObject;
@@ -13,7 +16,14 @@ public class ContainerRegistry {
 
 	public static RegistryObject<ContainerType<ResearchTableContainer>> RESEARCH_TABLE = CONTAINERS.register("research_table", () -> IForgeContainerType.create((windowId, inv, data) -> {
 		World world = inv.player.getEntityWorld();
-		return new ResearchTableContainer(windowId, world, inv, inv.player);
+		BlockPos blockPos = data.readBlockPos();
+		Block block = world.getBlockState(blockPos).getBlock();
+		int level = 0;
+		if (block instanceof ResearchTable) {
+			level = ((ResearchTable) block).getLevel();
+		}
+
+		return new ResearchTableContainer(windowId, world, inv, inv.player, level);
 	}));
 
 }

@@ -13,6 +13,7 @@ public class ResearchStage {
     public HashMap<ItemStack, ResearchValues> researchItems = new HashMap<>();
     private final ResearchValues basicResearchValuesDefault;
     private final ResearchValues advancedResearchValuesDefault;
+    public int requiredLevel = 0;
 
     public ResearchStage(String stageName, int defaultExperienceCost, int defaultResearchValue) {
 		this.stageName = stageName;

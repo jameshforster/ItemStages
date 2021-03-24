@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.blamejared.crafttweaker.api.CraftTweakerGlobals.println;
-
-
 @ZenRegister
 @ZenCodeType.Name("mods.ResearchStages")
 public class CrtMethods {
@@ -170,6 +167,14 @@ public class CrtMethods {
 		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
 		if (researchStage != null) {
 			researchStage.setDescription(description);
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setResearchLevel(String stageName, int level) {
+		ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
+		if (researchStage != null) {
+			researchStage.requiredLevel = level;
 		}
 	}
 }

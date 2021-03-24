@@ -13,9 +13,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.EnchantmentContainer;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.inventory.container.StonecutterContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
@@ -32,12 +30,12 @@ public class ResearchTableContainer extends Container {
 	};
 	private final World worldIn;
 	private List<ResearchStage> researchOptions = new ArrayList<>();
-	private final StonecutterContainer example = null;
-	private final EnchantmentContainer example2 = null;
+	private int level;
 
-	public ResearchTableContainer(int windowId, World world, PlayerInventory playerInventory, PlayerEntity player) {
+	public ResearchTableContainer(int windowId, World world, PlayerInventory playerInventory, PlayerEntity player, int level) {
 		super(ContainerRegistry.RESEARCH_TABLE.get(), windowId);
 		this.worldIn = world;
+		this.level = level;
 		this.addSlot(new Slot(this.tableInventory, 0, 15, 47) {
 			public int getSlotStackLimit() {
 				return 1;
@@ -112,7 +110,7 @@ public class ResearchTableContainer extends Container {
 
 	public void setResearchOptions(ClientPlayerEntity player) {
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
-		this.researchOptions = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch);
+		this.researchOptions = ResearchStageUtils.getOrderedValidStagesForLevel(player, this.getSlot(0).getStack(), playerResearch, level);
 	}
 
 	public List<ResearchStage> getResearchOptions() {
@@ -122,14 +120,14 @@ public class ResearchTableContainer extends Container {
 	public boolean canResearch(ClientPlayerEntity player, int selection) {
 		List<ResearchStage> validResearch;
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
-		validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch);
+		validResearch = ResearchStageUtils.getOrderedValidStagesForLevel(player, this.getSlot(0).getStack(), playerResearch, level);
 
 		return validResearch.size() > selection && validResearch.get(selection).getRequiredExperienceCost(this.getSlot(0).getStack()) <= player.experienceLevel;
 	}
 
 	public void doResearch(ClientPlayerEntity player, int selection) {
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
-		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStages(player, this.getSlot(0).getStack(), playerResearch).get(selection);
+		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStagesForLevel(player, this.getSlot(0).getStack(), playerResearch, level).get(selection);
 		ResearchStageUtils.doResearch(player, validResearch, this.getSlot(0).getStack());
 		onCraftMatrixChanged(this.tableInventory);
 	}

@@ -67,4 +67,15 @@ public class ResearchStageUtils {
 
         return validStages;
     }
+
+    public static List<ResearchStage> getOrderedValidStagesForLevel(PlayerEntity player, ItemStack itemStack, IPlayerResearch research, int tableLevel) {
+        List<ResearchStage> validStages = new ArrayList<>();
+        for (ResearchStage stage: getOrderedValidStages(player,itemStack,research)) {
+            if (stage.requiredLevel <= tableLevel) {
+                validStages.add(stage);
+            }
+        }
+
+        return validStages;
+    }
 }
