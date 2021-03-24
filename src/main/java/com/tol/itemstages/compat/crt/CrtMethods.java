@@ -4,10 +4,14 @@ import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.helper.CraftTweakerHelper;
 import com.blamejared.crafttweaker.impl.tag.MCTag;
 import com.tol.itemstages.research.ResearchStage;
+import com.tol.itemstages.utils.BlockStageUtils;
+import com.tol.itemstages.utils.ItemStageUtils;
 import com.tol.itemstages.utils.ResearchStageUtils;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -17,6 +21,9 @@ import org.openzen.zencode.java.ZenCodeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.blamejared.crafttweaker.api.CraftTweakerGlobals.println;
+
 
 @ZenRegister
 @ZenCodeType.Name("mods.ResearchStages")
@@ -30,9 +37,16 @@ public class CrtMethods {
 	}
 
 	@ZenCodeType.Method
-	public static void addItemStage(String stage, IIngredient input, boolean removeRecipes, boolean includeRecipeIngredients) {
+	public static void addItemStage(String stage, IIngredient input, boolean includeRecipeIngredients) {
 		for (IItemStack itemStack : input.getItems()) {
-			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, removeRecipes, includeRecipeIngredients));
+			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, true, includeRecipeIngredients));
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void addManagerItemStage(String stage, IIngredient input, IRecipeManager recipeManager, boolean includeRecipeIngredients) {
+		for (IItemStack itemStack : input.getItems()) {
+			CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, itemStack, recipeManager, includeRecipeIngredients));
 		}
 	}
 
@@ -55,6 +69,37 @@ public class CrtMethods {
 				CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, item, removeRecipes, includeRecipeIngredients));
 			}
 		}
+	}
+
+	@ZenCodeType.Method
+	public static void setStagedItemName(String name, IIngredient input) {
+		for (IItemStack itemStack : input.getItems()) {
+			ItemStageUtils.INSTANCE.updateHiddenName(name, itemStack.getInternal());
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setBlockStage(String name, MCTag<Block> input) {
+		for (Block block : input.getElements()) {
+			CraftTweakerAPI.apply(new ActionAddBlockRestriction(block, name));
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setBlockStage(String name, Block input) {
+		CraftTweakerAPI.apply(new ActionAddBlockRestriction(input, name));
+	}
+
+	@ZenCodeType.Method
+	public static void setStagedBlockName(String name, MCTag<Block> input) {
+		for (Block block : input.getElements()) {
+			BlockStageUtils.INSTANCE.STAGED_BLOCK_NAMES.put(block.getRegistryName(), name);
+		}
+	}
+
+	@ZenCodeType.Method
+	public static void setStagedBlockName(String name, Block input) {
+		BlockStageUtils.INSTANCE.STAGED_BLOCK_NAMES.put(input.getRegistryName(), name);
 	}
 
 	@ZenCodeType.Method
