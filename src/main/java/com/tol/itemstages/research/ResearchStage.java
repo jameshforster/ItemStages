@@ -1,8 +1,13 @@
 package com.tol.itemstages.research;
 
+import com.tol.itemstages.capabilities.IPlayerResearch;
+import com.tol.itemstages.capabilities.ResearchCapability;
 import com.tol.itemstages.utils.ItemStackUtils;
+import net.darkhax.gamestages.data.GameStageSaveHandler;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +15,11 @@ import java.util.Map;
 public class ResearchStage {
     public String stageName;
     public String description = "";
+    public String completedName = null;
+    public String completedContent = null;
+    public String incompleteName = null;
+    public String incompleteContent = null;
+    public ICondition displayCondition = DefaultCondition.INSTANCE;
     public HashMap<ItemStack, ResearchValues> researchItems = new HashMap<>();
     private final ResearchValues basicResearchValuesDefault;
     private final ResearchValues advancedResearchValuesDefault;
@@ -66,6 +76,21 @@ public class ResearchStage {
 		return ItemStackUtils.containsItemStack(input, this.researchItems.keySet());
     }
 
+    public List<ItemStack> unresearchedItems(ClientPlayerEntity playerEntity) {
+    	if (GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stageName)) {
+    		return new ArrayList<>();
+		}
+    	ArrayList<ItemStack> remainingItems = new ArrayList<>();
+    	for (ItemStack item: researchItems.keySet()) {
+    		if (!ItemStackUtils.containsItemStack(item, playerEntity.getCapability(ResearchCapability.PLAYER_RESEARCH).map(cap ->
+					cap.getResearchedItems().getOrDefault(stageName, new ArrayList<>())
+					).orElseGet(ArrayList::new))) {
+    			remainingItems.add(item);
+			}
+		}
+    	return remainingItems;
+	}
+
     public int getRequiredExperienceCost(ItemStack input) {
     	if (containsItem(input)) {
     		for (Map.Entry<ItemStack, ResearchValues> entry : this.researchItems.entrySet()) {
@@ -93,4 +118,18 @@ public class ResearchStage {
 	public String getDescriptiveName() {
         return this.stageName.substring(0, 1).toUpperCase() + this.stageName.substring(1) + " Research";
     }
+
+    public String getTextContent(ClientPlayerEntity playerEntity) {
+    	boolean isComplete = GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stageName);
+    	if (displayCondition.checkCondition(playerEntity)) {
+			if (!isComplete && incompleteContent != null) {
+				return incompleteContent;
+			} else if (completedContent != null) {
+				return completedContent;
+			}
+			return description;
+		}
+
+    	return "Unknown research";
+	}
 }
