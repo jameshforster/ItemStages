@@ -15,8 +15,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0'
-group = 'com.tol.itemstages' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'itemstages'
+group = 'com.tol.researchstages' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'researchstages'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 

@@ -1,0 +1,11 @@
+{
+  "processor": "com.tol.researchstages.compat.patchouli.processors.ResearchComponentProcessor",
+  "components" : [
+    {
+      "type": "text",
+      "text": "#researchTitle",
+      "x": 4,
+      "y": 10
+    }
+  ]
+}
