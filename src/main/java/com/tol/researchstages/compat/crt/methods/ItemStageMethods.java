@@ -64,4 +64,19 @@ public class ItemStageMethods {
             ItemStageUtils.INSTANCE.updateHiddenName(name, itemStack.getInternal());
         }
     }
+
+    @ZenCodeType.Method
+    public static void removeItem(IIngredient input) {
+        for (IItemStack itemStack : input.getItems()) {
+            CraftTweakerAPI.apply(new ActionAddItemRestriction("removed", itemStack, true, true));
+        }
+    }
+
+    @ZenCodeType.Method
+    public static void removeItemWithModCrafting(IIngredient input, IRecipeManager recipeManager) {
+        for (IItemStack itemStack : input.getItems()) {
+            CraftTweakerAPI.apply(new ActionAddItemRestriction("removed", itemStack, true, true));
+            CraftTweakerAPI.apply(new ActionAddItemRestriction("removed", itemStack, recipeManager, true));
+        }
+    }
 }

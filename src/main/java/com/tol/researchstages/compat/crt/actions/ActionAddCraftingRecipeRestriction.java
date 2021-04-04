@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,6 @@ public class ActionAddCraftingRecipeRestriction extends ActionRecipeBase {
 
     @Override
     public String describe() {
-        return "Empty description";
+        return "Adding recipe restriction for recipes with stage: " + stage;
     }
 }

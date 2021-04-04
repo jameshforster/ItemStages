@@ -1,6 +1,7 @@
 package com.tol.researchstages.compat.jei;
 
 import com.tol.researchstages.ConfigurationHandler;
+import com.tol.researchstages.recipes.StagedRecipe;
 import com.tol.researchstages.utils.ItemStageUtils;
 import com.tol.researchstages.utils.RecipeStageUtils;
 import mezz.jei.api.IModPlugin;
@@ -10,6 +11,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -19,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @JeiPlugin()
 public class PluginItemStages implements IModPlugin {
@@ -66,11 +69,11 @@ public class PluginItemStages implements IModPlugin {
 	public static void syncHiddenRecipes(PlayerEntity player) {
 		if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.JEIRestrictionsEnabled.get()) {
 			for (String resourceLocation : RecipeStageUtils.INSTANCE.STAGED_RECIPES_NAMES.keySet()) {
-                IRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation).stagedRecipe;
+                StagedRecipe<?> recipe = RecipeStageUtils.INSTANCE.STAGED_RECIPES.get(resourceLocation);
                 if (RecipeStageUtils.INSTANCE.hasAllStages(player, resourceLocation) && recipeManager != null) {
-                    recipeManager.unhideRecipe(recipe, recipe.getId());
+                    recipeManager.unhideRecipe(recipe.originalRecipe, recipe.originalRecipe.getId());
                 } else if (recipeManager != null) {
-                    recipeManager.hideRecipe(recipe, recipe.getId());
+                    recipeManager.hideRecipe(recipe.originalRecipe, recipe.originalRecipe.getId());
                 }
 			}
 		}

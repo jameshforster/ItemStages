@@ -34,6 +34,6 @@ public class ActionRemoveItemRestriction implements IRuntimeAction {
 
     @Override
     public String describe() {
-        return null;
+        return "Removing item restriction for: " + itemStack.getDisplayName() + " for stage: " + stage;
     }
 }

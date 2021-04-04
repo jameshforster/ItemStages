@@ -72,6 +72,6 @@ public class ActionAddItemRestriction implements IRuntimeAction {
 
     @Override
     public String describe() {
-        return "Describe string";
+        return "Adding item restriction for " + itemStack.getDisplayName() + " for stage: " + stage;
     }
 }
