@@ -9,6 +9,7 @@ import mezz.jei.events.PlayerJoinedWorldEvent;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
@@ -19,6 +20,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import org.apache.logging.log4j.LogManager;
 
 public class ClientEvents {
 
@@ -33,29 +35,16 @@ public class ClientEvents {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onClientSync(StagesSyncedEvent event) {
+        BookReloadUtils.patchouliUpdateConditional((ClientPlayerEntity) event.getPlayer());
         jeiConditional(event.getPlayer());
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public void onStageAdded(GameStageEvent.Added event) {
-        jeiConditional(event.getPlayer());
-        BookReloadUtils.patchouliUpdateConditional();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public void onStageRemoved(GameStageEvent.Removed event) {
-        jeiConditional(event.getPlayer());
-        BookReloadUtils.patchouliUpdateConditional();
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onClientLoadComplete(FMLLoadCompleteEvent event) {
+        BookReloadUtils.patchouliUpdateConditional(PlayerUtils.getClientPlayer());
         jeiConditional(PlayerUtils.getClientPlayer());
     }
 

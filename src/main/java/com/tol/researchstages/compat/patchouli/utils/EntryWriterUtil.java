@@ -1,6 +1,7 @@
 package com.tol.researchstages.compat.patchouli.utils;
 
 import com.google.gson.*;
+import com.tol.researchstages.research.DefaultCondition;
 import com.tol.researchstages.research.ResearchStage;
 import net.minecraft.client.Minecraft;
 
@@ -10,9 +11,11 @@ import java.io.IOException;
 
 public class EntryWriterUtil extends WriterUtil {
     private final File file;
+    private String entryName;
 
     public EntryWriterUtil(String bookFileName, String entryName) {
         super(bookFileName);
+        this.entryName = entryName;
         file = new File(Minecraft.getInstance().gameDir.getAbsolutePath() +  basePath + bookFileName + "/en_us/entries/" + entryName + ".json");
     }
 
@@ -40,6 +43,9 @@ public class EntryWriterUtil extends WriterUtil {
         entry.add("category", new JsonPrimitive("patchouli:" + researchStage.bookParams.categoryName));
         entry.add("icon", new JsonPrimitive((researchStage.bookParams.displayIcon != null) ? researchStage.bookParams.displayIcon : "minecraft:writable_book"));
         entry.add("sortnum", new JsonPrimitive(researchStage.bookParams.sortNum));
+        if (!(researchStage.bookParams.displayCondition instanceof DefaultCondition)) {
+            entry.add("flag", new JsonPrimitive(researchStage.stageName));
+        }
 
         JsonObject researchDetailsPage = new JsonObject();
         researchDetailsPage.add("type", new JsonPrimitive("patchouli:research_template"));

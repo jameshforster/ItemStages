@@ -1,0 +1,19 @@
+{
+  "parent": "block/cube",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "researchstages:block/basic_research_table_front",
+    "down": "researchstages:block/basic_research_table_bottom",
+    "up": "researchstages:block/basic_research_table_top",
+    "north": "researchstages:block/basic_research_table_front",
+    "east": "researchstages:block/basic_research_table_side_2",
+    "south": "researchstages:block/basic_research_table_back",
+    "west": "researchstages:block/basic_research_table_side"
+  }
+}

@@ -2,6 +2,7 @@ package com.tol.researchstages.networking;
 
 import com.tol.researchstages.capabilities.IPlayerResearch;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -26,23 +27,38 @@ public class NetworkingHandler {
                 .consumer(ResearchUpdatePacketHandler::handle)
                 .add();
 
-        INSTANCE.messageBuilder(StageUpdatePacketHandler.class, id++)
-                .encoder(StageUpdatePacketHandler::writeToBuffer)
-                .decoder(buf -> new StageUpdatePacketHandler(buf.readString()))
-                .consumer(StageUpdatePacketHandler::handle)
+        INSTANCE.messageBuilder(ResearchTriggerPacketHandler.class, id++)
+                .encoder(ResearchTriggerPacketHandler::writeToBuffer)
+                .decoder(buf -> new ResearchTriggerPacketHandler(buf.readCompoundTag()))
+                .consumer(ResearchTriggerPacketHandler::handle)
+                .add();
+
+        INSTANCE.messageBuilder(ResearchStudyPacketHandler.class, id++)
+                .encoder(ResearchStudyPacketHandler::writeToBuffer)
+                .decoder(buf -> new ResearchStudyPacketHandler(buf.readCompoundTag()))
+                .consumer(ResearchStudyPacketHandler::handle)
+                .add();
+
+        INSTANCE.messageBuilder(ResearchWritingPacketHandler.class, id++)
+                .encoder(ResearchWritingPacketHandler::writeToBuffer)
+                .decoder(buf -> new ResearchWritingPacketHandler(buf.readCompoundTag()))
+                .consumer(ResearchWritingPacketHandler::handle)
                 .add();
     }
 
-
-    public static void sendResearchMessageToServer(IPlayerResearch playerResearch) {
-        INSTANCE.sendToServer(new ResearchUpdatePacketHandler(playerResearch));
+    public static void sendResearchMessageToPlayer(IPlayerResearch playerResearch, ServerPlayerEntity player, boolean playSound) {
+        INSTANCE.sendTo(new ResearchUpdatePacketHandler(playerResearch, playSound), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static void sendResearchMessageToPlayer(IPlayerResearch playerResearch, ServerPlayerEntity player) {
-        INSTANCE.sendTo(new ResearchUpdatePacketHandler(playerResearch), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendResearchTriggerToServer(String stageName, ItemStack item, int tableLevel) {
+        INSTANCE.sendToServer(new ResearchTriggerPacketHandler(stageName, item, tableLevel));
     }
 
-    public static void sendStageUpdateToServer(String stageName) {
-        INSTANCE.sendToServer(new StageUpdatePacketHandler(stageName));
+    public static void sendResearchStudyMessageToServer(String stageName, String itemType) {
+        INSTANCE.sendToServer(new ResearchStudyPacketHandler(stageName, itemType));
+    }
+
+    public static void sendResearchWritingMessageToServer(String stageName, ItemStack itemStack) {
+        INSTANCE.sendToServer(new ResearchWritingPacketHandler(itemStack, stageName));
     }
 }

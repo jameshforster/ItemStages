@@ -68,6 +68,13 @@ public class TemplateWriterUtil extends WriterUtil {
             "      \"text\" : \"Progress: #progress#\",\n" +
             "      \"x\": 5,\n" +
             "      \"y\": 80\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"custom\",\n" +
+            "      \"class\": \"com.tol.researchstages.compat.patchouli.components.WriteStoneTabletComponent\",\n" +
+            "      \"x\": 5,\n" +
+            "      \"y\": 90,\n" +
+            "      \"stage_name\": \"#stageName\"\n" +
             "    }\n" +
             "  ]\n" +
             "}";

@@ -16,17 +16,13 @@ import java.util.List;
 @ZenCodeType.Name("mods.ResearchStages.research")
 public class ResearchStageMethods {
     @ZenCodeType.Method
-    public static void setupResearchStage(String stageName, int experienceCost, int researchProgress, IIngredient[] basicItems, IIngredient[] advancedItems) {
+    public static void setupResearchStage(String stageName, int experienceCost, int researchProgress, IIngredient[] defaultItems) {
         List<ItemStack> basicItemList = new ArrayList<>();
-        List<ItemStack> advancedItemList = new ArrayList<>();
-        for (IIngredient ingredient : basicItems) {
+        for (IIngredient ingredient : defaultItems) {
             basicItemList.addAll(Arrays.asList(CraftTweakerHelper.getItemStacks(ingredient.getItems())));
         }
 
-        for (IIngredient ingredient : advancedItems) {
-            advancedItemList.addAll(Arrays.asList(CraftTweakerHelper.getItemStacks(ingredient.getItems())));
-        }
-        ResearchStage stage = new ResearchStage(stageName, experienceCost, researchProgress, basicItemList, advancedItemList);
+        ResearchStage stage = new ResearchStage(stageName, experienceCost, researchProgress, basicItemList);
         ResearchStageUtils.RESEARCH_STAGES.put(stageName, stage);
     }
 

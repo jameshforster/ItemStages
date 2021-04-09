@@ -13,6 +13,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -21,18 +23,22 @@ import org.apache.logging.log4j.LogManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class ResearchUpdatePacketHandler {
 
 	private IPlayerResearch playerResearch;
+	private boolean playSound;
 
-	public ResearchUpdatePacketHandler(IPlayerResearch playerResearch) {
+	public ResearchUpdatePacketHandler(IPlayerResearch playerResearch, boolean playSound) {
 		this.playerResearch = playerResearch;
+		this.playSound = playSound;
 	}
 
 	public ResearchUpdatePacketHandler(CompoundNBT compoundNBT) {
 		this.playerResearch = new PlayerResearch(compoundNBT);
+		this.playSound = compoundNBT.getBoolean("playSound");
 	}
 
 	public void writeToBuffer(PacketBuffer pkt) {
@@ -41,6 +47,8 @@ public class ResearchUpdatePacketHandler {
 
 	private CompoundNBT toNbt() {
 		CompoundNBT tag = new CompoundNBT();
+
+		tag.putBoolean("playSound", playSound);
 
 		for (Map.Entry<ResearchStage, BigDecimal> entry : this.playerResearch.getResearch().entrySet()) {
 			tag.putLong("research_" + entry.getKey().stageName, entry.getValue().longValue());
@@ -77,23 +85,10 @@ public class ResearchUpdatePacketHandler {
 						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
 					}
 				});
-				BookReloadUtils.patchouliUpdateConditional();
-			} else {
-				LogManager.getLogger().info("[RESEARCHSTAGES] Logged message to server from client.");
-				ServerPlayerEntity sender = ctx.get().getSender();
-				sender.getCapability(ResearchCapability.PLAYER_RESEARCH).ifPresent(cap -> {
-					LogManager.getLogger().info("[RESEARCHSTAGES] Updating server capability.");
-					for (Map.Entry<ResearchStage, BigDecimal> entry : cap.getResearch().entrySet()) {
-						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
-					}
-					cap.setResearch(this.playerResearch.getResearch());
-					cap.setResearchedItems(this.playerResearch.getResearchedItems());
-					LogManager.getLogger().info("[RESEARCHSTAGES] Updated server capability.");
-					for (Map.Entry<ResearchStage, BigDecimal> entry : cap.getResearch().entrySet()) {
-						LogManager.getLogger().info("[RESEARCHSTAGES] Stage " + entry.getKey().stageName + " with progress " + entry.getValue());
-					}
-					NetworkingHandler.sendResearchMessageToPlayer(cap, sender);
-				});
+				if (playSound) {
+					Minecraft.getInstance().player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.1F,(new Random().nextFloat() - new Random().nextFloat()) * 0.35F + 0.9F);
+				}
+				BookReloadUtils.patchouliUpdateConditional(Minecraft.getInstance().player);
 			}
 		});
 		return true;

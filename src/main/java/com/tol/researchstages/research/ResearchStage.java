@@ -17,8 +17,7 @@ public class ResearchStage {
     public String stageName;
     public String description = "";
     public HashMap<ItemStack, ResearchValues> researchItems = new HashMap<>();
-    private final ResearchValues basicResearchValuesDefault;
-    private final ResearchValues advancedResearchValuesDefault;
+    private final ResearchValues defaultResearchValues;
     public int requiredLevel = 0;
     public final EntryParameters bookParams;
 
@@ -30,33 +29,24 @@ public class ResearchStage {
 			calculatedExpCost = defaultExperienceCost - 5;
 		}
 
-		basicResearchValuesDefault = new ResearchValues(defaultExperienceCost, defaultResearchValue);
-		advancedResearchValuesDefault = new ResearchValues(calculatedExpCost, defaultResearchValue * 2);
+		defaultResearchValues = new ResearchValues(defaultExperienceCost, defaultResearchValue);
 		bookParams = new EntryParameters("research_compendium", "research_category");
     }
 
-    public ResearchStage(String stageName, int defaultExperienceCost, int defaultResearchValue, List<ItemStack> basicItems, List<ItemStack> advancedItems) {
+    public ResearchStage(String stageName, int defaultExperienceCost, int defaultResearchValue, List<ItemStack> basicItems) {
         this.stageName = stageName;
 
-		int advancedExpCost = 0;
-		if (defaultExperienceCost > 5) {
-			advancedExpCost = defaultExperienceCost - 5;
-		}
-
-        basicResearchValuesDefault = new ResearchValues(defaultExperienceCost, defaultResearchValue);
-        advancedResearchValuesDefault = new ResearchValues(advancedExpCost, defaultResearchValue * 2);
+        defaultResearchValues = new ResearchValues(defaultExperienceCost, defaultResearchValue);
 
         for (ItemStack basicItem : basicItems) {
-        	researchItems.put(basicItem, basicResearchValuesDefault);
+        	researchItems.put(basicItem, defaultResearchValues);
 		}
-        for (ItemStack advancedItem : advancedItems) {
-        	researchItems.put(advancedItem, advancedResearchValuesDefault);
-		}
+
 		bookParams = new EntryParameters("research_compendium", "research_category");
     }
 
     public void addDefaultItem(ItemStack input) {
-		this.researchItems.put(input, basicResearchValuesDefault);
+		this.researchItems.put(input, defaultResearchValues);
     }
 
     public void addResearchItem(ItemStack input, int experienceCost, int progressValue) {
@@ -68,7 +58,7 @@ public class ResearchStage {
     }
 
     public List<ItemStack> getUnresearchedItems(ClientPlayerEntity playerEntity) {
-    	if (GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stageName) || !bookParams.displayCondition.checkCondition(playerEntity)) {
+    	if (GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stageName)) {
     		return new ArrayList<>();
 		}
     	ArrayList<ItemStack> remainingItems = new ArrayList<>();
@@ -120,4 +110,8 @@ public class ResearchStage {
 	public String getDescriptiveName() {
         return this.stageName.substring(0, 1).toUpperCase() + this.stageName.substring(1) + " Research";
     }
+
+    public int getDefaultExperienceCost() {
+    	return defaultResearchValues.experienceCost;
+	}
 }

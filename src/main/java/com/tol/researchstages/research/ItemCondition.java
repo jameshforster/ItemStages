@@ -4,6 +4,7 @@ import com.tol.researchstages.capabilities.ResearchCapability;
 import com.tol.researchstages.utils.ItemStackUtils;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,12 +2,14 @@ package com.tol.researchstages.compat.crt.methods;
 
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import com.tol.researchstages.compat.patchouli.utils.ResearchFlagUtils;
 import com.tol.researchstages.research.ResearchStage;
 import com.tol.researchstages.utils.ResearchStageUtils;
 import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @ZenRegister
 @ZenCodeType.Name("mods.ResearchStages.book")
@@ -89,6 +91,20 @@ public class ResearchBookMethods {
         ResearchStage researchStage = ResearchStageUtils.RESEARCH_STAGES.get(stageName);
         if (researchStage != null) {
             researchStage.bookParams.sortNum = number;
+        }
+    }
+
+    @ZenCodeType.Method
+    public static void setResearchCategoryStage(String stageName, String categoryName) {
+        List<String> stages = ResearchFlagUtils.STAGED_CATEGORIES.getOrDefault(categoryName, new ArrayList<>());
+        if (!stages.contains(stageName)) {
+            stages.add(stageName);
+        }
+        ResearchFlagUtils.STAGED_CATEGORIES.put(categoryName, stages);
+        for (ResearchStage stage: ResearchStageUtils.RESEARCH_STAGES.values()) {
+            if (stage.bookParams.categoryName.equals(categoryName)) {
+                stage.bookParams.setDisplayCondition("dependency", stages, stage);
+            }
         }
     }
 }

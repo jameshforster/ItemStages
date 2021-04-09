@@ -63,7 +63,7 @@ public class PlayerEvents {
         if (event.getPlayer() instanceof ServerPlayerEntity) {
 			LogManager.getLogger().info("[RESEARCHSTAGES] Player login event recorded on server side.");
 			IPlayerResearch research = event.getPlayer().getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
-            NetworkingHandler.sendResearchMessageToPlayer(research, (ServerPlayerEntity) event.getPlayer());
+            NetworkingHandler.sendResearchMessageToPlayer(research, (ServerPlayerEntity) event.getPlayer(), false);
         }
     }
 

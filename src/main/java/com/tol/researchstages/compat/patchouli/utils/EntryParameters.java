@@ -29,30 +29,22 @@ public class EntryParameters {
 
     public String getTextContent(ClientPlayerEntity playerEntity, ResearchStage stage) {
         boolean isComplete = GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stage.stageName);
-        if (displayCondition.checkCondition(playerEntity)) {
-            if (!isComplete && incompleteContent != null) {
-                return incompleteContent;
-            } else if (completedContent != null) {
-                return completedContent;
-            }
-            return stage.description;
+        if (!isComplete && incompleteContent != null) {
+            return incompleteContent;
+        } else if (completedContent != null) {
+            return completedContent;
         }
-
-        return "You do not yet understand the complexities of this research.";
+        return stage.description;
     }
 
     public String getDocumentName(ClientPlayerEntity playerEntity, String stageName) {
         boolean isComplete = GameStageSaveHandler.getPlayerData(playerEntity.getUniqueID()).hasStage(stageName);
-        if (displayCondition.checkCondition(playerEntity)) {
-            if (!isComplete && incompleteName != null) {
-                return incompleteName;
-            } else if (completedName != null) {
-                return completedName;
-            }
-            return stageName;
+        if (!isComplete && incompleteName != null) {
+            return incompleteName;
+        } else if (completedName != null) {
+            return completedName;
         }
-
-        return "Unknown research";
+        return stageName;
     }
 
     public String getProgress(ClientPlayerEntity playerEntity, ResearchStage stage) {
@@ -73,11 +65,42 @@ public class EntryParameters {
     }
 
     public void setDisplayCondition(String conditionType, List<String> dependencies, ResearchStage researchStage) {
-        switch (conditionType) {
-            case "completed": this.displayCondition = new CompletedCondition(researchStage.stageName);
-            case "dependency": this.displayCondition = new DependencyCondition(dependencies);
-            case "item": this.displayCondition = new ItemCondition(researchStage.stageName, new ArrayList<>(researchStage.researchItems.keySet()));
-            default: break;
+        if (displayCondition instanceof DefaultCondition) {
+            List<ICondition> conditions = new ArrayList<>();
+            switch (conditionType) {
+                case "completed": {
+                    conditions.add(new CompletedCondition(researchStage.stageName));
+                    break;
+                }
+                case "dependency": {
+                    conditions.add(new DependencyCondition(dependencies));
+                    break;
+                }
+                case "item": {
+                    conditions.add(new ItemCondition(researchStage.stageName, new ArrayList<>(researchStage.researchItems.keySet())));
+                    break;
+                }
+                default: break;
+            }
+
+            this.displayCondition = new ChainedCondition(conditions);
+        }
+        else if (displayCondition instanceof ChainedCondition) {
+            switch (conditionType) {
+                case "completed": {
+                    ((ChainedCondition)this.displayCondition).updateCompletedCondition(new CompletedCondition(researchStage.stageName));
+                    break;
+                }
+                case "dependency": {
+                    ((ChainedCondition)this.displayCondition).updateDependencyCondition(new DependencyCondition(dependencies));
+                    break;
+                }
+                case "item": {
+                    ((ChainedCondition)this.displayCondition).updateItemCondition(new ItemCondition(researchStage.stageName, new ArrayList<>(researchStage.researchItems.keySet())));
+                    break;
+                }
+                default: break;
+            }
         }
     }
 }

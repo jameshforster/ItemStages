@@ -3,6 +3,7 @@ package com.tol.researchstages.containers;
 import com.tol.researchstages.capabilities.IPlayerResearch;
 import com.tol.researchstages.capabilities.ResearchCapability;
 import com.tol.researchstages.compat.patchouli.utils.BookReloadUtils;
+import com.tol.researchstages.networking.NetworkingHandler;
 import com.tol.researchstages.registries.ContainerRegistry;
 import com.tol.researchstages.research.PlayerResearch;
 import com.tol.researchstages.research.ResearchStage;
@@ -132,6 +133,7 @@ public class ResearchTableContainer extends Container {
 		IPlayerResearch playerResearch = player.getCapability(ResearchCapability.PLAYER_RESEARCH).orElse(new PlayerResearch());
 		ResearchStage validResearch = ResearchStageUtils.getOrderedValidStagesForLevel(player, this.getSlot(0).getStack(), playerResearch, level).get(selection);
 		ResearchStageUtils.doResearch(player, validResearch, this.getSlot(0).getStack());
+		NetworkingHandler.sendResearchTriggerToServer(validResearch.stageName, this.getSlot(0).getStack(), this.level);
 		onCraftMatrixChanged(this.tableInventory);
 	}
 
